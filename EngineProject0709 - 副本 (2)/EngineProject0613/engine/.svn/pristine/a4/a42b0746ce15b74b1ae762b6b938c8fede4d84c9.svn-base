@@ -1,0 +1,249 @@
+#include"ScenceManager.h"
+#include"model.h"
+
+
+
+Scence::Scence()
+{
+	m_root = this;
+	m_type = SCENCE;
+}
+Scence::~Scence()
+{
+}
+
+void Scence::InitScence()
+{
+
+	m_p_scence_camera = new Camera(glm::vec3(0.0f, 0.0f,30.0f));
+	m_projection_mat = glm::perspective(glm::radians(m_p_scence_camera->Zoom), (float)1280 / (float)768, 0.1f, 100.0f);
+	m_view_mat = m_p_scence_camera->GetViewMatrix();
+	time = 0.0;
+	vector<std::string> faces
+	{
+		"skybox/emerald-summit_ft.tga",
+		"skybox/emerald-summit_bk.tga",
+		"skybox/emerald-summit_up.tga",
+		"skybox/emerald-summit_dn.tga",
+		"skybox/emerald-summit_rt.tga",
+		"skybox/emerald-summit_lf.tga"
+	};
+	cubemapTexture = this->m_r_helper->m_t_helper->loadCubemap(faces);
+
+
+}
+
+bool Scence::LoadModel(const char* url)
+{
+	Model* model = new Model();
+	model->Load(url, "", "");
+	model_list.push_back(model);
+	model->SetFatherNode((Node*)this);
+	return true;
+}
+
+
+
+bool Scence::LoadModel(Value::ConstValueIterator json)
+{
+	const char* name = json->GetObject().MemberBegin()->name.GetString();
+	//RenderHelper* r_helper = ((Engine*)g_module_ptr)->GetRenderHelper();
+	Model* model = new Model();
+	model->SetModelName(name);
+
+	const char* mesh_url = NULL;
+	const char* vs_url = NULL;
+	const char* fs_url = NULL;
+
+	//json->
+	//Value::ConstValueIterator vitr = json->GetObject().MemberBegin()->value.Begin();
+	for (Value::ConstValueIterator vitr = json->GetObject().MemberBegin()->value.Begin(); vitr != json->GetObject().MemberBegin()->value.End(); ++vitr)
+	{
+		const char* n = vitr->GetObject().MemberBegin()->name.GetString();
+		if (!strcmp(n, "mesh_url"))
+		{
+			mesh_url = vitr->GetObject().MemberBegin()->value.GetString();
+		}
+		if (!strcmp(n, "vs_url"))
+		{
+			vs_url = vitr->GetObject().MemberBegin()->value.GetString();
+		}
+		if (!strcmp(n, "fs_url"))
+		{
+			fs_url = vitr->GetObject().MemberBegin()->value.GetString();
+		}
+
+	}
+	model->Load(mesh_url, vs_url, fs_url);
+	model_list.push_back(model);
+	model->SetFatherNode((Node*)this);
+	model->CreateAnimation();
+	return true;
+}
+
+void Scence::Updete(float delta_time)
+{
+	for (list<Model*>::iterator iter = model_list.begin(); iter != model_list.end(); ++iter)
+	{
+		//iter->
+		((Model*)*iter)->Update(delta_time);
+	}
+	float radius = 30.0f;
+	time = time + 1 * delta_time;
+	//printf("%f\n", time);
+	float camX = sin(time) * radius;
+	float camZ = cos(time) * radius;
+	glm::vec3 pos = glm::vec3(camX, 20.0f, camZ);
+	//m_p_scence_camera->setcamera_pos(pos);
+
+}
+
+void Scence::updatakeyborad(char * direction, float deltaTime)
+{
+	if (!strcmp(direction, "FORWARD"))
+		m_p_scence_camera->ProcessKeyboard(FORWARD, deltaTime);
+	if (!strcmp(direction, "BACKWARD"))
+		m_p_scence_camera->ProcessKeyboard(BACKWARD, deltaTime);
+	if (!strcmp(direction, "LEFT"))
+		m_p_scence_camera->ProcessKeyboard(LEFT, deltaTime);
+	if (!strcmp(direction, "RIGHT"))
+		m_p_scence_camera->ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void Scence::updatamousemovement(float xoffset, float yoffset)
+{
+	m_p_scence_camera->ProcessMouseMovement(xoffset, yoffset);
+}
+void Scence::updataMouseScroll(float yoffset)
+{
+	m_p_scence_camera->ProcessMouseScroll(yoffset);
+}
+
+
+
+void Scence::Render()
+{
+
+	for (list<Model*>::iterator iter = model_list.begin(); iter != model_list.end(); ++iter)
+	{
+		//iter->
+		((Model*)*iter)->Draw();
+	}
+}
+
+void Scence::Release()
+{
+	for (list<Model*>::iterator iter = model_list.begin(); iter != model_list.end(); ++iter)
+	{
+		//iter->
+		delete *iter;
+	}
+}
+glm::mat4 Scence::get_scence_view_mat()
+{
+	glm::mat4 vm = m_p_scence_camera->GetViewMatrix();
+	return vm;
+}
+glm::mat4 Scence::get_scence_projection_mat()
+{
+	return  glm::perspective(glm::radians(m_p_scence_camera->Zoom), (float)1280 / (float)768, 0.1f, 100.0f);//m_projection_mat;
+	//glm::mat4 vm = m_p_scence_camera->GetViewMatrix();
+	//return vm;
+}
+glm::vec3 Scence::get_camera_pos()
+{
+	return m_p_scence_camera->Position;
+}
+
+ScenceManager::ScenceManager()
+{
+}
+
+ScenceManager::~ScenceManager()
+{
+}
+
+bool ScenceManager::LoadScence(const char* scence_name, const char* scence_date_model_name, const char* scence_date_model_url)//加载场景文件
+{
+	Scence * sence = new Scence();
+	m_Scence[scence_name] = sence;
+	sence->SetFatherNode((Node*)this);
+	sence->InitScence();
+	sence->LoadModel(scence_date_model_url);
+	return true;
+}
+
+
+
+
+
+bool ScenceManager::LoadScence(const char* scence_name, Value::ConstValueIterator json)
+{
+	Scence * sence = new Scence();
+	m_Scence[scence_name] = sence;
+	sence->SetFatherNode((Node*)this);
+	sence->InitScence();
+	sence->LoadModel(json);
+	return true;
+}
+
+bool ScenceManager::InitScenceManager()//初始化场景管理器 
+{
+	return true;
+}
+
+void ScenceManager::UpdateScences(float delta_time)//更新场景 
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+		iter->second->Updete(delta_time);
+		//delete iter->second;
+		//iter->second = NULL;
+	}
+}
+void ScenceManager::updatakeyborad(char * direction, float deltaTime)
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+		iter->second->updatakeyborad(direction, deltaTime);
+
+	}
+}
+
+void ScenceManager::updatamousemovement(float xoffset, float yoffset)
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+		iter->second->updatamousemovement(xoffset, yoffset);
+
+	}
+}
+
+void ScenceManager::updataMouseScroll(float yoffset)
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+		iter->second->updataMouseScroll(yoffset);
+
+	}
+}
+
+void ScenceManager::RenderScences()
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+
+		iter->second->Render();
+		//delete iter->second;
+		//iter->second = NULL;
+	}
+}
+
+void ScenceManager::Release()
+{
+	for (map<string, Scence*>::iterator iter = m_Scence.begin(); iter != m_Scence.end(); ++iter)
+	{
+		delete iter->second;
+		iter->second = NULL;
+	}
+}

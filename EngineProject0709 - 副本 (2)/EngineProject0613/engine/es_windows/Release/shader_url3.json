@@ -1,0 +1,30 @@
+
+{"NORMAL":[
+	   {"vs_url":"./out_shader/1.model_loading.vs"},
+	   {"fs_url":"./out_shader/1.model_loading.fs"}      
+          ],
+
+ "PHONG":[
+	   {"vs_url":"./out_shader/phong.vs"},
+	   {"fs_url":"./out_shader/phong.fs"}      
+          ],
+
+ "PHONG_TEX":[
+	   {"vs_url":"./out_shader/PhongTextured.vs"},
+	   {"fs_url":"./out_shader/PhongTextured.fs"}      
+                ],
+
+ "PHONG_CUB":[
+	        {"vs_url":"./out_shader/phong_cube.vs"},
+	        {"fs_url":"./out_shader/phong_cube.fs"}      
+                 ],
+ "PHONG_TEX_CUB":[
+	        {"vs_url":"./out_shader/PhongTexturedCube.vs"},
+	        {"fs_url":"./out_shader/PhongTexturedCube.fs"}      
+                 ],
+ "Physically_Based":[
+	        {"vs_url":"./out_shader/Physically_Based.vs"},
+	        {"fs_url":"./out_shader/Physically_Based.fs"}      
+                 ]
+}
+

@@ -1,0 +1,120 @@
+#pragma once
+//#include "MakeDll.h"
+//#include "module.h"
+
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+
+#include <shader.h>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+//unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
+#include"Node.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include"Animation.h"
+//#include "mesh2.h"
+//#include"Includes.h"
+
+class Mesh;
+
+class  Model : public Node
+{
+public:
+	/*  Model Data */
+	vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+	vector<Mesh*> meshes;
+	map<string, Mesh*> meshes_map;
+	string directory;
+	bool gammaCorrection;
+	Shader* shader_draw;
+
+	map<string, Animation*> AniGroup;
+
+	//Animation* ani_rdoor;
+	//Animation* ani_ldoor;
+	//Animation* ani_rfwheel_run;
+	//Animation* ani_rfwheel_turn;
+	//Animation* ani_lfwheel_run;
+	//Animation* ani_lfwheel_turn;
+
+
+
+
+
+	
+
+	/*  Functions   */
+	// constructor, expects a filepath to a 3D model.
+	Model();
+	Model(RenderHelper* r_helper);
+	Model(string const &path, Shader* shader, bool gamma);
+	~Model();
+
+	Animation* test_ani;
+	Animation* test_ani2;
+
+	Animation* ani_rdoor;
+	Animation* ani_ldoor;
+
+
+
+	bool CreateAnimation();
+
+
+
+
+	void SetModelName(const char* name);
+
+	void SetupMats();
+
+	void Update(float delta_time);
+
+	bool Load(const char* model,const char* vs_shader_byte_path, const char* fs_shader_byte_path);
+	// draws the model, and thus all its meshes
+	void Draw();
+
+
+	void Set_shader(Shader * shader);
+	int Get_shader_id();
+
+	void Release();
+
+	 void use_shader(int id);
+
+
+	void set_r_helper(RenderHelper* r_helper);
+
+
+private:
+	const char* m_name;
+
+
+	RenderHelper * m_r_helper;
+	/*  Functions   */
+	// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
+	void loadModel(string const &path);
+
+	// processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+	void processNode(aiNode *node, const aiScene *scene);
+
+
+	Mesh* processMesh(aiMesh *mesh, const aiScene *scene);
+
+
+	// checks all material textures of a given type and loads the textures if they're not loaded yet.
+	// the required info is returned as a Texture struct.
+	vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName);
+
+};
+
+
+

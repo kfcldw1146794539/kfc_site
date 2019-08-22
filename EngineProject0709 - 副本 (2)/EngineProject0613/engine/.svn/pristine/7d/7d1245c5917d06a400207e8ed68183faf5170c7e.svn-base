@@ -1,0 +1,167 @@
+
+#include<MakeDll.h>
+
+#include "model.h"
+
+#include "Engine.h"
+
+
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include"ScenceManager.h"
+
+using namespace rapidjson;
+Engine::Engine() 
+{
+
+	m_SecenceManager = NULL;
+	m_AniManager = NULL;
+	
+}
+
+Engine::~Engine() 
+{
+
+	Release();
+}
+
+bool Engine::CreateEngine(RenderHelper * r_helper)
+{
+	m_r_helper = r_helper;
+	return true;
+}
+
+
+void Engine::UpdeteEngin(float delta_time)
+{
+	m_SecenceManager->UpdateScences(delta_time);
+}
+void Engine::updatakeyborad(char * direction, float deltaTime)
+{
+	m_SecenceManager->updatakeyborad(direction, deltaTime);
+}
+void Engine::updatamousemovement(float xoffset, float yoffset)
+{
+	m_SecenceManager->updatamousemovement(xoffset, yoffset);
+}
+void Engine::updataMouseScroll(float yoffset)
+{
+	m_SecenceManager->updataMouseScroll(yoffset);
+}
+
+void Engine::RenderEngine() 
+{
+	m_SecenceManager->RenderScences();
+}
+bool Engine::InitEngnie(const char* config)
+{
+	m_AniManager = new AnimationManager();
+	m_SecenceManager = new ScenceManager();
+	ifstream in;
+	string line;
+	string  str;
+	in.open(config, ifstream::in);
+
+	while (getline(in, line))
+	{
+		str.append(line + "\n");
+	}
+	in.close();
+
+	TranslateConfigFile(str.c_str());
+	
+	
+	return true;
+}
+void Engine::Release()
+{
+	delete m_SecenceManager;
+	delete m_AniManager;
+}
+
+void Engine::PlayAnimation(const char* name)
+{
+	m_AniManager->PlayAnimation(name);
+}
+
+
+bool Engine::TranslateConfigFile(const char* data) 
+{
+	
+
+	Document document;
+	document.Parse<0>(data);
+	Value & v = document;
+	//Value::ConstMemberIterator iter = v.MemberBegin();
+
+	for (Value::ConstMemberIterator iter = v.MemberBegin(); iter != v.MemberEnd(); ++iter)
+	{
+		if ((iter->value).IsArray())
+		{
+
+			
+			//Value::ConstValueIterator vitr = iter->value.Begin();
+
+			const char * scence_name = "";
+			const char * scence_date = "";
+			scence_name = iter->name.GetString();
+			//iter->value;
+
+			for (Value::ConstValueIterator vitr = iter->value.Begin(); vitr != iter->value.End(); ++vitr)
+			{
+				const char* model_name = vitr->GetObject().MemberBegin()->name.GetString();
+				//const char* model_url = vitr->GetObject().MemberBegin()->value.GetString();
+				if(vitr->GetObject().MemberBegin()->value.IsArray())
+				{
+					m_SecenceManager->LoadScence(scence_name, vitr);
+				}
+			//	m_SecenceManager->LoadScence(scence_name, model_name, model_url);
+			}
+			
+			
+		}
+	}
+	return true;
+}
+
+
+
+
+int Module_id = 0;
+void * g_module_ptr = NULL;
+map<int, Engine* > g_modules_map;
+Engine* create_models()
+{
+
+	Engine * model = new Engine();
+	Module_id = Module_id + 1;
+	g_modules_map[Module_id] = model;
+	return (Engine*)model;
+}
+
+Engine* create_model()
+{
+
+	Engine * model = new Engine();
+	//Module_id = Module_id + 1;
+	//g_modules_map[Module_id] = model;
+	g_module_ptr =(void*) model;
+	return (Engine*)model;
+}
+
+bool  release_model(int id)
+{
+	g_modules_map[Module_id]->Release();
+	delete g_modules_map[Module_id];
+	return true;
+}
+
+RenderHelper* create_render_help()
+{
+	return new RenderHelper;
+}
+void release_render_help(RenderHelper* helper)
+{
+	delete helper;
+}

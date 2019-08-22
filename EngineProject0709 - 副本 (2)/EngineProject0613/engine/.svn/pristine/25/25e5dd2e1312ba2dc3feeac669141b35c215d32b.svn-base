@@ -1,0 +1,34 @@
+varying vec2 TexCoords;
+
+uniform vec4 Emissive;
+
+varying vec3 vNormal;
+varying vec3 vViewDirection;
+varying vec2 vTexCoord;
+varying vec3 vAmbDif;
+varying vec3 vSpec;
+
+uniform samplerCube TextureCube;
+uniform sampler2D texture_diffuse1;
+uniform float BlendIntensity;
+void main()
+{    
+//precision highp float;    
+vec3 R = reflect(normalize(vViewDirection), normalize(vNormal));
+
+vec4 CubemapColor=vec4(1.0,1.0,1.0,1.0);
+
+vec3 cubemapColor = textureCube(TextureCube, R).rgb * CubemapColor.rgb ;
+//vec3 cubemapColor =R * CubemapColor.rgb;
+
+vec4 baseColor = texture2D(texture_diffuse1, TexCoords);
+
+//vec3 color = vec3(0.089000, 0.089000 ,0.089000);
+vec3 color =vAmbDif* baseColor.rgb + vSpec + Emissive.rgb+cubemapColor ;
+
+//vec3(0.0,0.0,1.0) ;
+
+
+gl_FragColor.rgb = color  ;
+gl_FragColor.a =baseColor.a;
+}

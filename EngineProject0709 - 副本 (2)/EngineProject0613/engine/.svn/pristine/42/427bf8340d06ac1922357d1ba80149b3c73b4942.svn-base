@@ -1,0 +1,636 @@
+#ifndef SHADER_H
+#define SHADER_H
+
+//#include <glad/glad.h>
+#include <GLES2/gl2.h>
+//#include <glm/glm.hpp>
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <map>
+#include "Defines.h"
+#include "module.h"
+using namespace std;
+
+class Shader 
+{
+public:
+	unsigned int ID;
+	//create_shader_func cs_func;
+	// constructor generates the shader on the fly
+	// ------------------------------------------------------------------------
+	map<ShaderType, unsigned int> m_Shaders;
+
+	Shader()
+	{
+
+	}
+	virtual bool Load(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper ,const char* geometryPath = nullptr)
+	{
+		m_s_helper = s_helper;
+		// 1. retrieve the vertex/fragment source code from filePath
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::string geometryCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
+		std::ifstream gShaderFile;
+		// ensure ifstream objects can throw exceptions:
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			// open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			// read file's buffer contents into streams
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			// close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			// convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+			// if geometry shader path is present, also load a geometry shader
+			if (geometryPath != nullptr)
+			{
+				gShaderFile.open(geometryPath);
+				std::stringstream gShaderStream;
+				gShaderStream << gShaderFile.rdbuf();
+				gShaderFile.close();
+				geometryCode = gShaderStream.str();
+			}
+		}
+		catch (std::ifstream::failure e)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+			return false;
+		}
+		char vShaderStr[] =
+			"attribute vec3  aPos;    \n"
+			"attribute vec3	 aNormal;    \n"
+			"attribute vec2	 aTexCoords;    \n"
+
+			"varying   vec2	 TexCoords;    \n"
+
+			"uniform mat4 model; \n"
+			"uniform mat4 view; \n"
+			"uniform mat4 projection; \n"
+
+			"void main()                  \n"
+			"{                            \n"
+			"   TexCoords = aTexCoords; \n"
+
+			" gl_Position = projection * view * model * vec4(aPos, 1.0); \n"
+			"}                            \n";
+
+		char fShaderStr[] =
+			"precision mediump float;\n"
+
+			"varying   vec2	 TexCoords;    \n"
+			"uniform sampler2D texture_diffuse1; \n"
+
+			"void main()                                  \n"
+			"{                                            \n"
+			"  gl_FragColor = texture2D(texture_diffuse1, TexCoords); \n"
+			"}                                            \n";
+		//const char* vShaderCode = vertexCode.c_str();
+		//const char * fShaderCode = fragmentCode.c_str();
+		const char* vShaderCode = vShaderStr;
+		const char * fShaderCode = fShaderStr;
+		// 2. compile shaders
+		if(m_s_helper->c_s_func)
+		{
+			ID = m_s_helper->c_s_func(vShaderCode, fShaderCode);
+			m_Shaders[NORMAL] = ID;
+		}
+		return true;
+		
+
+	}
+	// activate the shader
+	// ------------------------------------------------------------------------
+	void use(ShaderType type = NORMAL)
+	{
+		//glUseProgram(ID);
+		m_s_helper->u_s_func(m_Shaders[type]);
+
+	}
+	// utility uniform functions
+	// ------------------------------------------------------------------------
+	void setBool(const std::string &name, bool value) const
+	{
+		m_s_helper->s_s_bool_func(ID,name, value);
+		//glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+	}
+	// ------------------------------------------------------------------------
+	void setInt(const std::string &name, int value) const
+	{
+		m_s_helper->s_s_int_func(ID,name, value);
+		//glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+	}
+	// ------------------------------------------------------------------------
+	void setFloat(const std::string &name, float value) const
+	{
+		//int pos = t_helper->
+		m_s_helper->s_s_float_func(ID, name, value);
+		//glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	}
+	// ------------------------------------------------------------------------
+	void setVec2(const std::string &name, const glm::vec2 &value) const
+	{
+		//s_helper->s_s_vec2_func(name, value);
+		//glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void setVec2(const std::string &name, float x, float y) const
+	{
+		m_s_helper->s_s_vec2_func(ID, name, x, y);
+		//glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+	}
+	// ------------------------------------------------------------------------
+	void setVec3(const std::string &name, const glm::vec3 &value) const
+	{
+		//s_helper->s_s_vec3_func(name, value);
+		//glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void setVec3(const std::string &name, float x, float y, float z) const
+	{
+		m_s_helper->s_s_vec3_func(ID, name, x,  y,  z);
+		//glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+	}
+	// ------------------------------------------------------------------------
+	void setVec4(const std::string &name, const glm::vec4 &value) const
+	{
+		//glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+	}
+	void setVec4(const std::string &name, float x, float y, float z, float w)
+	{
+		m_s_helper->s_s_vec4_func(ID, name, x, y, z, w);
+		//glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+	}
+	// ------------------------------------------------------------------------
+	void setMat2(const std::string &name, const glm::mat2 &mat) const
+	{
+		m_s_helper->s_s_mat2_func(ID, name, mat);
+		//glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
+	// ------------------------------------------------------------------------
+	void setMat3(const std::string &name, const glm::mat3 &mat) const
+	{
+		m_s_helper->s_s_mat3_func(ID, name, mat);
+		//glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
+	// ------------------------------------------------------------------------
+	void setMat4(const std::string &name, const glm::mat4 &mat) const
+	{
+		m_s_helper->s_s_mat4_func(ID, name, mat);
+		//glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
+
+	void set_shader_helper(shader_helper* s_helper)
+	{
+		m_s_helper = s_helper;
+	}
+
+	shader_helper* m_s_helper;
+
+private:
+	// utility function for checking shader compilation/linking errors.
+	// ------------------------------------------------------------------------
+	void checkCompileErrors(GLuint shader, std::string type)
+	{
+		GLint success;
+		char infoLog[1024];
+		if (type != "PROGRAM")
+		{
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+				std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			}
+		}
+		else
+		{
+			glGetProgramiv(shader, GL_LINK_STATUS, &success);
+			if (!success)
+			{
+				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+				std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			}
+		}
+	}
+};
+
+
+class PhongShader : public Shader
+{
+public :
+	PhongShader(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper)
+	{
+		this->m_s_helper = s_helper;
+		Load("", "", s_helper);
+	
+	}
+	~PhongShader() {}
+
+	virtual bool Load(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper, const char* geometryPath = nullptr)
+	{
+		m_s_helper = s_helper;
+		// 1. retrieve the vertex/fragment source code from filePath
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::string geometryCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
+		std::ifstream gShaderFile;
+		// ensure ifstream objects can throw exceptions:
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			// open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			// read file's buffer contents into streams
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			// close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			// convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+			// if geometry shader path is present, also load a geometry shader
+			if (geometryPath != nullptr)
+			{
+				gShaderFile.open(geometryPath);
+				std::stringstream gShaderStream;
+				gShaderStream << gShaderFile.rdbuf();
+				gShaderFile.close();
+				geometryCode = gShaderStream.str();
+			}
+		}
+		catch (std::ifstream::failure e)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+			return false;
+		}
+		char vShaderStr[] =
+			"attribute vec3 kzPosition;\n"
+			"attribute vec3 kzNormal;\n"
+			"uniform highp mat4 kzProjectionCameraWorldMatrix;\n"
+			"uniform highp mat4 kzWorldMatrix;\n"
+			"uniform highp mat4 kzNormalMatrix;\n"
+			"uniform highp vec3 kzCameraPosition;\n"
+			"uniform mediump vec3 PointLightPosition[2];\n"
+			"uniform lowp vec4 PointLightColor[2];\n"
+			"uniform mediump vec3 PointLightAttenuation[2];\n"
+			"uniform lowp vec4 DirectionalLightColor[1];\n"
+			"uniform mediump vec3 DirectionalLightDirection[1];\n"
+			"uniform lowp float BlendIntensity;\n"
+			"uniform lowp vec4 Emissive;\n"
+
+			"uniform lowp vec4 Ambient;\n"
+			"uniform lowp vec4 Diffuse;\n"
+			"uniform lowp vec4 SpecularColor;\n"
+			"uniform mediump float SpecularExponent;\n"
+
+			"varying lowp vec4 vColor;\n"
+
+			"void main()\n"
+			"{\n"
+				"precision mediump float;\n"
+
+				"vec3 pointLightDirection[2];\n"
+				"vec4 positionWorld = kzWorldMatrix * vec4(kzPosition.xyz, 1.0);\n"
+				"vec3 V = normalize(positionWorld.xyz - kzCameraPosition);\n"
+				"vec4 Norm = kzNormalMatrix * vec4(kzNormal, 1.0);\n"
+				"vec3 N = normalize(Norm.xyz);\n"
+
+				"pointLightDirection[0] = positionWorld.xyz - PointLightPosition[0];\n"
+				"pointLightDirection[1] = positionWorld.xyz - PointLightPosition[1];\n"
+
+				"vec3 L[3];\n"
+				"vec3 H[3];\n"
+				"float LdotN, NdotH;\n"
+				"float specular;\n"
+				"vec3 c;\n"
+				"float d, attenuation;\n"
+
+				"lowp vec3 vAmbDif = vec3(0.0);\n"
+				"lowp vec3 vSpec = vec3(0.0);\n"
+
+				"L[0] = vec3(1.0, 0.0, 0.0);\n"
+				"if (length(DirectionalLightDirection[0]) > 0.01)\n"
+				"{\n"
+					"L[0] = normalize(-DirectionalLightDirection[0]);\n"
+				"}\n"
+				"H[0] = normalize(-V + L[0]);\n"
+
+				"L[1] = normalize(-pointLightDirection[0]);\n"
+				"H[1] = normalize(-V + L[1]);\n"
+
+				"L[2] = normalize(-pointLightDirection[1]);\n"
+				"H[2] = normalize(-V + L[2]);\n"
+
+				"vAmbDif += Ambient.rgb;\n"
+
+			// Apply directional light 0.
+				"{\n"
+					"LdotN = max(0.0, dot(L[0], N));\n"
+					"NdotH = max(0.0, dot(N, H[0]));\n"
+					"specular = pow(NdotH, SpecularExponent);\n"
+					"vAmbDif += (LdotN * Diffuse.rgb) * DirectionalLightColor[0].rgb;\n"
+					"vSpec += SpecularColor.rgb * specular * DirectionalLightColor[0].rgb;\n"
+				"}\n"
+
+				// Apply point light 0.
+				"{\n"
+					"LdotN = max(0.0, dot(L[1], N));\n"
+					"NdotH = max(0.0, dot(N, H[1]));\n"
+					"specular = pow(NdotH, SpecularExponent);\n"
+					"c = PointLightAttenuation[0];\n"
+					"d = length(pointLightDirection[0]);\n"
+					"attenuation = 1.0 / max(0.001, (c.x + c.y * d + c.z * d * d));\n"
+					"vAmbDif += (LdotN * Diffuse.rgb) * attenuation * PointLightColor[0].rgb;\n"
+					"vSpec += SpecularColor.rgb * specular * attenuation * PointLightColor[0].rgb;\n"
+				"}\n"
+
+				// Apply point light 1.
+				"{\n"
+					"LdotN = max(0.0, dot(L[2], N));\n"
+					"NdotH = max(0.0, dot(N, H[2]));\n"
+					"specular = pow(NdotH, SpecularExponent);\n"
+					"c = PointLightAttenuation[1];\n"
+					"d = length(pointLightDirection[1]);\n"
+					"attenuation = 1.0 / max(0.001, (c.x + c.y * d + c.z * d * d));\n"
+					"vAmbDif += (LdotN * Diffuse.rgb) * attenuation * PointLightColor[1].rgb;\n"
+					"vSpec += SpecularColor.rgb * specular * attenuation * PointLightColor[1].rgb;\n"
+				"}\n"
+
+				"vColor.rgb = (vAmbDif.rgb + vSpec.rgb + Emissive.rgb) * BlendIntensity;\n"
+				"vColor.a = BlendIntensity;\n"
+				"gl_Position = kzProjectionCameraWorldMatrix * vec4(kzPosition.xyz, 1.0);\n"
+			"}\n";
+
+		char fShaderStr[] =
+			"varying lowp vec4 vColor;\n"
+
+			"void main()\n"
+			"{\n"
+				"precision lowp float;\n"
+
+				"gl_FragColor.rgba = vColor;\n"
+			"}\n";
+
+		//const char* vShaderCode = vertexCode.c_str();
+		//const char * fShaderCode = fragmentCode.c_str();
+		const char* vShaderCode = vShaderStr;
+		const char * fShaderCode = fShaderStr;
+		// 2. compile shaders
+		if (m_s_helper->c_s_func)
+		{
+			ID = m_s_helper->c_s_func(vShaderCode, fShaderCode);
+		}
+		return true;
+
+
+	}
+};
+
+class PhongShader2 : public Shader
+{
+public:
+	PhongShader2(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper)
+	{
+		this->m_s_helper = s_helper;
+		Load("", "", s_helper);
+
+	}
+	~PhongShader2() {}
+
+	virtual bool Load(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper, const char* geometryPath = nullptr)
+	{
+		m_s_helper = s_helper;
+		// 1. retrieve the vertex/fragment source code from filePath
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::string geometryCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
+		std::ifstream gShaderFile;
+		// ensure ifstream objects can throw exceptions:
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			// open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			// read file's buffer contents into streams
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			// close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			// convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+			// if geometry shader path is present, also load a geometry shader
+			if (geometryPath != nullptr)
+			{
+				gShaderFile.open(geometryPath);
+				std::stringstream gShaderStream;
+				gShaderStream << gShaderFile.rdbuf();
+				gShaderFile.close();
+				geometryCode = gShaderStream.str();
+			}
+		}
+		catch (std::ifstream::failure e)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+			return false;
+		}
+		char vShaderStr[] =
+			"attribute vec3 kzPosition;\n"
+			"attribute vec3 kzNormal;\n"
+			"uniform highp mat4 kzProjectionCameraWorldMatrix;\n"
+			"uniform highp mat4 kzWorldMatrix;\n"
+			"uniform highp mat4 kzNormalMatrix;\n"
+			"uniform highp vec3 kzCameraPosition;\n"
+			"uniform mediump vec3 PointLightPosition[2];\n"
+			"uniform lowp vec4 PointLightColor[2];\n"
+			"uniform mediump vec3 PointLightAttenuation[2];\n"
+			"uniform lowp vec4 DirectionalLightColor[1];\n"
+			"uniform mediump vec3 DirectionalLightDirection[1];\n"
+			"uniform lowp float BlendIntensity;\n"
+			"uniform lowp vec4 Emissive;\n"
+
+			"uniform lowp vec4 Ambient;\n"
+			"uniform lowp vec4 Diffuse;\n"
+			"uniform lowp vec4 SpecularColor;\n"
+			"uniform mediump float SpecularExponent;\n"
+
+			"varying lowp vec4 vColor;\n"
+
+			"void main()\n"
+			"{\n"
+			"precision mediump float;\n"
+
+			"vec3 pointLightDirection[2];\n"
+			"vec4 positionWorld = kzWorldMatrix * vec4(kzPosition.xyz, 1.0);\n"
+			"vec3 V = normalize(positionWorld.xyz - kzCameraPosition);\n"
+			"vec4 Norm = kzNormalMatrix * vec4(kzNormal, 1.0);\n"
+			"vec3 N = normalize(Norm.xyz);\n"
+
+			"pointLightDirection[0] = positionWorld.xyz - PointLightPosition[0];\n"
+			"pointLightDirection[1] = positionWorld.xyz - PointLightPosition[1];\n"
+
+			"vec3 L[3];\n"
+			"vec3 H[3];\n"
+			"float LdotN, NdotH;\n"
+			"float specular;\n"
+			"vec3 c;\n"
+			"float d, attenuation;\n"
+
+			"lowp vec3 vAmbDif = vec3(0.0);\n"
+			"lowp vec3 vSpec = vec3(0.0);\n"
+
+			"L[0] = vec3(1.0, 0.0, 0.0);\n"
+			"if (length(DirectionalLightDirection[0]) > 0.01)\n"
+			"{\n"
+			"L[0] = normalize(-DirectionalLightDirection[0]);\n"
+			"}\n"
+			"H[0] = normalize(-V + L[0]);\n"
+
+			"L[1] = normalize(-pointLightDirection[0]);\n"
+			"H[1] = normalize(-V + L[1]);\n"
+
+			"L[2] = normalize(-pointLightDirection[1]);\n"
+			"H[2] = normalize(-V + L[2]);\n"
+
+			"vAmbDif += Ambient.rgb;\n"
+
+			// Apply directional light 0.
+			"{\n"
+			"LdotN = max(0.0, dot(L[0], N));\n"
+			"NdotH = max(0.0, dot(N, H[0]));\n"
+			"specular = pow(NdotH, SpecularExponent);\n"
+			"vAmbDif += (LdotN * Diffuse.rgb) * DirectionalLightColor[0].rgb;\n"
+			"vSpec += SpecularColor.rgb * specular * DirectionalLightColor[0].rgb;\n"
+			"}\n"
+
+			// Apply point light 0.
+			"{\n"
+			"LdotN = max(0.0, dot(L[1], N));\n"
+			"NdotH = max(0.0, dot(N, H[1]));\n"
+			"specular = pow(NdotH, SpecularExponent);\n"
+			"c = PointLightAttenuation[0];\n"
+			"d = length(pointLightDirection[0]);\n"
+			"attenuation = 1.0 / max(0.001, (c.x + c.y * d + c.z * d * d));\n"
+			"vAmbDif += (LdotN * Diffuse.rgb) * attenuation * PointLightColor[0].rgb;\n"
+			"vSpec += SpecularColor.rgb * specular * attenuation * PointLightColor[0].rgb;\n"
+			"}\n"
+
+			// Apply point light 1.
+			"{\n"
+			"LdotN = max(0.0, dot(L[2], N));\n"
+			"NdotH = max(0.0, dot(N, H[2]));\n"
+			"specular = pow(NdotH, SpecularExponent);\n"
+			"c = PointLightAttenuation[1];\n"
+			"d = length(pointLightDirection[1]);\n"
+			"attenuation = 1.0 / max(0.001, (c.x + c.y * d + c.z * d * d));\n"
+			"vAmbDif += (LdotN * Diffuse.rgb) * attenuation * PointLightColor[1].rgb;\n"
+			"vSpec += SpecularColor.rgb * specular * attenuation * PointLightColor[1].rgb;\n"
+			"}\n"
+
+			"vColor.rgb = (vAmbDif.rgb + vSpec.rgb + Emissive.rgb) * BlendIntensity;\n"
+			"vColor.a = BlendIntensity;\n"
+			"gl_Position = kzProjectionCameraWorldMatrix * vec4(kzPosition.xyz, 1.0);\n"
+			"}\n";
+
+		char fShaderStr[] =
+			"varying lowp vec4 vColor;\n"
+
+			"void main()\n"
+			"{\n"
+			"precision lowp float;\n"
+
+			"gl_FragColor.rgba = vColor;\n"
+			"}\n";
+
+		//const char* vShaderCode = vertexCode.c_str();
+		//const char * fShaderCode = fragmentCode.c_str();
+		const char* vShaderCode = vShaderStr;
+		const char * fShaderCode = fShaderStr;
+		// 2. compile shaders
+		if (m_s_helper->c_s_func)
+		{
+			ID = m_s_helper->c_s_func(vShaderCode, fShaderCode);
+		}
+		return true;
+
+
+	}
+};
+
+class BoundShaer : public Shader
+{
+public :
+	BoundShaer(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper)
+	{
+		this->m_s_helper = s_helper;
+		Load("","", s_helper);
+	}
+	~BoundShaer()
+	{
+	}
+
+	bool Load(const char* vertexPath, const char* fragmentPath, shader_helper* s_helper, const char* geometryPath = nullptr)
+	{
+		char vShaderStr[] =
+			"attribute vec3  aPos;    \n"
+
+			"uniform mat4 model; \n"
+			"uniform mat4 view; \n"
+			"uniform mat4 projection; \n"
+
+			"void main()                  \n"
+			"{                            \n"
+
+			" gl_Position = projection * view * model * vec4(aPos, 1.0); \n"
+			"}                            \n";
+
+		char fShaderStr[] =
+			"precision mediump float;\n"
+
+
+			"void main()                                  \n"
+			"{                                            \n"
+			"  gl_FragColor = vec4 ( 0.0, 1.0, 0.0, 1.0 ); \n"
+			"}                                            \n";
+		//const char* vShaderCode = vertexCode.c_str();
+		//const char * fShaderCode = fragmentCode.c_str();
+		const char* vShaderCode = vShaderStr;
+		const char * fShaderCode = fShaderStr;
+		// 2. compile shaders
+		if (m_s_helper->c_s_func)
+		{
+			ID = m_s_helper->c_s_func(vShaderCode, fShaderCode);
+		}
+		return true;
+	}
+};
+
+
+#endif

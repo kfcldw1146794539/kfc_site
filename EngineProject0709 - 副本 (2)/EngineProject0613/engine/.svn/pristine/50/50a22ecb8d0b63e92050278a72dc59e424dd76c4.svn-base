@@ -1,0 +1,29 @@
+#include"Materials.h"
+
+void create_glass_material(glm::vec4& Ambient, glm::vec4& Diffuse, glm::vec4& Emissive, glm::vec4& SpecularColor, float& SpecularExponent, float& BlendIntensity)
+{
+	Ambient.r = 1.0f;
+	Ambient.g = 1.0f;
+	Ambient.b = 1.0f;
+	Ambient.a = 1.0f;
+
+	Diffuse.r = 1.0f;
+	Diffuse.g = 1.0f;
+	Diffuse.b = 1.0f;
+	Diffuse.a = 1.0f;
+
+	Emissive.r = 1.0f;
+	Emissive.g = 1.0f;
+	Emissive.b = 1.0f;
+	Emissive.a = 1.0f;
+
+	SpecularColor.r = 1.0f;
+	SpecularColor.g = 1.0f;
+	SpecularColor.b = 1.0f;
+	SpecularColor.a = 1.0f;
+
+	SpecularExponent = 36;
+
+	BlendIntensity = 1.0f;
+
+}

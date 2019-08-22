@@ -1,0 +1,32 @@
+﻿  SenceManager.cpp
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(101): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(109): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(116): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(75): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(86): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  model.cpp
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(75): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(86): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(101): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(109): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(116): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\model.cpp(204): warning C4101: “vertices_round_box”: 未引用的局部变量
+  mesh2.cpp
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(101): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(109): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(116): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+  Materials.cpp
+  Engine.cpp
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(75): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(86): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(101): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(109): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\camera.h(116): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+  Animation.cpp
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(75): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\mesh_model_lib_dll\model_dll\model_dll\animation.h(86): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  正在生成代码...
+    正在创建库 F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\model_dll.lib 和对象 F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\model_dll.exp
+STB_IMAGE.lib(stb_image.obj) : warning LNK4099: 未找到 PDB“STB_IMAGE.pdb”(使用“STB_IMAGE.lib(stb_image.obj)”或在“F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\STB_IMAGE.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+  model_dll.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\model_dll.dll
+  model_dll.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\model_dll.pdb (Full PDB)

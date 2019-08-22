@@ -1,0 +1,21 @@
+﻿  windows.cpp
+C:\Program Files (x86)\Windows Kits\8.1\Include\shared\minwindef.h(130): warning C4005: “APIENTRY”: 宏重定义
+  F:\work\yuan\opengles\glfw_model\windows_ES\include\GLFW/glfw3.h(104): note: 参见“APIENTRY”的前一个定义
+windows.cpp(129): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(254): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(255): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(260): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(261): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(264): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(265): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(275): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(276): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+windows.cpp(311): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+LINK : warning LNK4098: 默认库“MSVCRTD”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  正在生成代码
+  1 of 164 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  es_windows.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Release\es_windows.exe
+  es_windows.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Release\es_windows.pdb (Full PDB)

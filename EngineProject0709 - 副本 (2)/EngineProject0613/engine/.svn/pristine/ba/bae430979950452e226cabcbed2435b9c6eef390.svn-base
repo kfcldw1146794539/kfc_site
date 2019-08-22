@@ -1,0 +1,128 @@
+#ifndef MESH_H
+#define MESH_H
+
+//#include <glad/glad.h> // holds all OpenGL type declarations
+//#include <GLES2/gl2.h>
+//#include "esUtil.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <shader.h>
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include "module.h"
+#include "Materials.h"
+using namespace std;
+
+#include"Node.h"
+//#include"ScenceManager.h"
+
+//#include"Includes.h"
+
+enum CenterPoinInFace
+{
+	VOLUME_MIDDLE = 0,
+	FACE_FRONT,
+	FACE_BACK,
+	FACE_LEFT,
+	FACE_RIGHT,
+	FACE_TOP,
+	FACE_BUTTOM,
+};
+
+
+class Mesh : public  Node 
+{
+public:
+	/*  Mesh Data  */
+	
+	vector<Vertex> vertices;
+	vector<unsigned short> indices;
+	vector<Texture> textures;
+	//unsigned int VAO;
+	Shader* ourShader;
+	// Attribute locations
+	int  positionLoc;
+	int  normalLoc;
+	int  texCoordLoc;
+	int  tangentLoc;
+	int  bitangentLoc;
+
+	unsigned int cubemapTexture;
+
+
+	vector<Vertex> BoundBoxVertices;
+
+	Vertex BoundBoxVetex[8];
+
+	Shader* m_BoundShader;
+
+	int  b_positionLoc;
+	bool m_bound_visible;
+
+
+	float n_bound_point_max_x;
+	float n_bound_point_min_x;
+	float n_bound_point_max_y;
+	float n_bound_point_min_y;
+	float n_bound_point_max_z;
+	float n_bound_point_min_z;
+	
+
+
+	// Sampler locations
+	//GLint baseMapLoc;
+
+	/*  Functions  */
+	// constructor
+	Mesh(string name, vector<Vertex> vertices, vector<unsigned short> indices, vector<Texture> textures, Shader*shader, RenderHelper* render_helper);
+
+	~Mesh();
+
+	void SetBoundPoins(float max_x, float min_x, float max_y, float min_y, float max_z, float min_z);
+
+	void MakeCenterPoint(int cen_pos_type);
+
+	void SetMeshName(const char* name);
+
+	void SetupMats();
+	// render the mesh
+	void Draw(Shader shader);
+
+	void DrawBound();
+
+	void SetRender(RenderHelper* renderer);
+
+	void ChangeShader(Shader* s);
+
+	void SetMaterialType(ShaderType m);
+
+	void SetMaterial(Material& m);
+
+
+	void setcubemapTexture(unsigned int cubemapTexture);
+
+
+private:
+	/*  Render data  */
+	unsigned int VBO, EBO;
+	unsigned int BoundVBO;
+	RenderHelper* m_renderer;
+
+	/*  Functions    */
+	// initializes all the buffer objects/arrays
+	void setupMeshProperty();
+	void setupMesh();
+
+	void setupBoundMeshProperty();
+	void setupBoundMeshMesh();
+
+	ShaderType m_material_type;
+	Material m_material;
+
+};
+#endif

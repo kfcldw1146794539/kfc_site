@@ -1,0 +1,160 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# 创建的文件:26.04.2019 13:06:39
+
+newmtl Shadow
+	Ns 56.4386
+	Ni 1.5000
+	d 0.0000
+	Tr 1.0000
+	Tf 0.0000 0.0000 0.0000 
+	illum 2
+	Ka 0.3000 0.3000 0.3000
+	Kd 0.7000 0.7000 0.7000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka CarShadowGroundA.png
+	map_Kd CarShadowGroundA.png
+	map_d CarShadowGroundA.png
+
+newmtl CarRim
+	Ns 56.4386
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.3000 0.3000 0.3000
+	Kd 0.7000 0.7000 0.7000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka 360Car_Wheel.png
+	map_Kd 360Car_Wheel.png
+	map_refl 贴图__1_Reflect\Refract.png
+
+newmtl CarTire
+	Ns 25.8496
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.3000 0.3000 0.3000
+	Kd 0.7000 0.7000 0.7000
+	Ks 0.1090 0.1090 0.1090
+	Ke 0.0000 0.0000 0.0000
+	map_Ka 360Car_Tire.png
+	map_Kd 360Car_Tire.png
+
+newmtl Headlights
+	Ns 81.0852
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0890 0.0890 0.0890
+	Kd 0.7000 0.7000 0.7000
+	Ks 3.0000 3.0000 3.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka 360Car_MainBody.png
+	map_Kd 360Car_MainBody.png
+	map_refl 贴图__2_Reflect\Refract.png
+
+newmtl CarMainBody
+	Ns 35.8496
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0890 0.0890 0.0890
+	Kd 0.7000 0.7000 0.7000
+	Ks 0.2870 0.2870 0.2870
+	Ke 0.0000 0.0000 0.0000
+	map_Ka 360Car_MainBody.png
+	map_Kd 360Car_MainBody.png
+
+newmtl CarHeadlight
+	Ns 56.4386
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0300 0.0300 0.0300
+	Ks 0.4650 0.4650 0.4650
+	Ke 0.0000 0.0000 0.0000
+
+newmtl CarWindow
+	Ns 73.9232
+	Ni 1.5000
+	d 0.9100
+	Tr 0.0900
+	Tf 0.9100 0.9100 0.9100 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_refl 贴图__3_Reflect\Refract.png
+
+newmtl CarInterior
+	Ns 38.0735
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0500 0.0500 0.0500
+	Kd 0.1490 0.1490 0.1490
+	Ks 0.0790 0.0790 0.0790
+	Ke 0.0000 0.0000 0.0000
+
+newmtl CarLicense
+	Ns 73.9232
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0890 0.0890 0.0890
+	Kd 0.0990 0.0990 0.0990
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl CarChrome
+	Ns 56.4386
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0200 0.0200 0.0200
+	Kd 0.1980 0.1980 0.1980
+	Ks 0.1780 0.1780 0.1780
+	Ke 0.0000 0.0000 0.0000
+
+newmtl CarBlack
+	Ns 56.4386
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl CarTaillight
+	Ns 48.4800
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.1390 0.0000 0.0000
+	Ks 0.1490 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000

@@ -1,0 +1,713 @@
+#pragma once
+#include "Engine.h"
+#include "model.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
+
+//#include "ScenceManager.h"
+#include <mesh2.h>
+#include"ScenceManager.h"
+
+enum TextureLoad
+{
+	ERR_DIR = 0,
+	ERR_LOAD,
+	LOAD_SUCESSE,
+};
+
+unsigned int TextureFromFile(const char *path, const string &directory, int &state ,bool gamma = false)
+{
+	string filename = string(path);
+	filename = directory + '/' + filename;
+
+	unsigned int textureID = 0;
+	//glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	//stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+	if (data)
+	{
+
+		textureID=t_helper->g_g_t_func(data, width, height, nrComponents);
+		/*
+		GLenum format;
+		/*if (nrComponents == 1)
+		format = GL_RED;*/
+//		/*else*/ if (nrComponents == 3)
+//			format = GL_RGB;
+//		else if (nrComponents == 4)
+//			format = GL_RGBA;
+
+//		glBindTexture(GL_TEXTURE_2D, textureID);
+//		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+//		glGenerateMipmap(GL_TEXTURE_2D);
+
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+		state = LOAD_SUCESSE;
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+		state = ERR_DIR;
+	}
+
+	return textureID;
+}
+
+Model::Model(string const &path, Shader* shader, bool gamma = false) : gammaCorrection(gamma)
+{
+	m_type = MODEL;
+	shader_draw = shader;
+	loadModel(path);
+
+}
+
+Model::Model()
+{
+	m_type = MODEL;
+	
+	set_r_helper(((Engine*)g_module_ptr)->GetRenderHelper());
+	//m_r_helper = ((Engine*)g_module_ptr)->GetRenderHelper();
+}
+
+Model::~Model()
+{
+}
+
+bool Model::Load(const char* model, const char* vs_shader_byte_path, const char* fs_shader_byte_path)
+{
+	Shader *s = new Shader();
+	if (s->Load(vs_shader_byte_path, fs_shader_byte_path, m_r_helper->m_s_helper) == false)
+		return false;
+	s->set_shader_helper(m_r_helper->m_s_helper);
+	Set_shader(s);
+	loadModel(model);
+	//Model ourModel("F:/work/yuan/opengles/model/model/Debug/jili/text04.FBX", &ourShader);
+	return true;
+}
+
+void Model::Release()
+{
+	delete shader_draw;
+	for (unsigned int i = 0; i < meshes.size(); i++)
+		delete meshes[i];
+}
+
+
+
+void Model::Set_shader(Shader * shader)
+{
+	if (shader)
+	{
+		shader_draw = shader;
+		return ;
+	}
+	else
+	{
+		return ;
+
+	}
+}
+
+int Model::Get_shader_id()
+{
+	return shader_draw->ID;
+}
+
+void Model::use_shader(int id)
+{
+	shader_draw->use();
+	
+}
+
+void Model::loadModel(string const &path)
+{
+	// read file via ASSIMP
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	// check for errors
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+	{
+		cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	// retrieve the directory path of the filepath
+	directory = path.substr(0, path.find_last_of('/'));
+
+	// process ASSIMP's root node recursively
+	processNode(scene->mRootNode, scene);
+}
+
+// processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+void Model::processNode(aiNode *node, const aiScene *scene)
+{
+	// process each mesh located at the current node
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		// the node object only contains indices to index the actual objects in the scene. 
+		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];//aiMesh里面的名字为空，而名字在aiNode中
+		Mesh* myMesh = processMesh(mesh, scene);
+		if (myMesh) 
+		{
+			myMesh->SetMeshName(node->mName.C_Str());
+
+			if (node->mParent) 
+			{
+//				aiMatrix4x4 mat = node->mParent->mTransformation;
+			}
+
+			
+			meshes.push_back(myMesh);
+			meshes_map[node->mName.C_Str()] = myMesh;
+			if (myMesh->m_name == "door_r_f")
+			{
+				myMesh->MakeCenterPoint(FACE_RIGHT);
+			}
+			else if (myMesh->m_name == "door_l_f")
+			{
+				myMesh->MakeCenterPoint(FACE_RIGHT);
+			}
+
+			else
+			{
+				myMesh->MakeCenterPoint(VOLUME_MIDDLE);
+			}
+			//myMesh->MakeCenterPoint()
+		}
+		
+	}
+	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		processNode(node->mChildren[i], scene);
+	}
+
+}
+
+
+
+Mesh* Model::processMesh(aiMesh *mesh, const aiScene *scene)
+{
+	// data to fill
+	vector<Vertex> vertices;
+	vector<unsigned short> indices;
+	vector<Texture> textures;
+	Vertex vertices_round_box[8];
+	float max_x = 0.0f;
+	float min_x = 0.0f;
+	float max_y = 0.0f;
+	float min_y = 0.0f;
+	float max_z = 0.0f;
+	float min_z = 0.0f;
+	// Walk through each of the mesh's vertices
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+	{
+		Vertex vertex;
+		glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+						  // positions
+		vector.x = mesh->mVertices[i].x;
+		vector.y = mesh->mVertices[i].y;
+		vector.z = mesh->mVertices[i].z;
+		vertex.Position = vector;
+		if(i == 0)
+		{
+			max_x = vector.x;
+			min_x = vector.x;
+			max_y = vector.y;
+			min_y = vector.y;
+			max_z = vector.z;
+			min_z = vector.z;
+		}
+		else
+		{
+			if(vector.x > max_x)
+				max_x = vector.x;
+			if (vector.x < min_x)
+				min_x = vector.x;
+			if (vector.y > max_y)
+				max_y = vector.y;
+			if (vector.y < min_y)
+				min_y = vector.y;
+			if (vector.z > max_z)
+				max_z = vector.z;
+			if (vector.z < min_z)
+				min_z = vector.z;
+		}
+		// normals
+		vector.x = mesh->mNormals[i].x;
+		vector.y = mesh->mNormals[i].y;
+		vector.z = mesh->mNormals[i].z;
+		vertex.Normal = vector;
+		// texture coordinates
+		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		{
+			glm::vec2 vec;
+			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
+			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+			vec.x = mesh->mTextureCoords[0][i].x;
+			vec.y = mesh->mTextureCoords[0][i].y;
+			vertex.TexCoords = vec;
+		}
+		else
+			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		// tangent
+		vector.x = mesh->mTangents[i].x;
+		vector.y = mesh->mTangents[i].y;
+		vector.z = mesh->mTangents[i].z;
+		vertex.Tangent = vector;
+		// bitangent
+		vector.x = mesh->mBitangents[i].x;
+		vector.y = mesh->mBitangents[i].y;
+		vector.z = mesh->mBitangents[i].z;
+		vertex.Bitangent = vector;
+		vertices.push_back(vertex);
+	}
+	// now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		// retrieve all indices of the face and store them in the indices vector
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+			indices.push_back(face.mIndices[j]);
+	}
+	// process materials
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
+	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
+	// Same applies to other texture as the following list summarizes:
+	// diffuse: texture_diffuseN
+	// specular: texture_specularN
+	// normal: texture_normalN
+
+	aiColor3D color;
+	aiString mName;
+	Material m;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_NAME, mName))
+	{
+		m.name = mName.C_Str();
+
+	}
+	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color))
+	{
+		m.Kambient = glm::vec4(color.r, color.g, color.b, 1.0f);
+
+	}
+	//aiColor3D color;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color))
+	{
+		m.Kdiffuse = glm::vec4(color.r, color.g, color.b, 1.0f);
+	}
+	//aiColor3D color;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color))
+	{
+		m.KspecularColor = glm::vec4(color.r, color.g, color.b, 1.0f);
+	}
+	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_EMISSIVE, color))
+	{
+		m.Kemissive = glm::vec4(color.r, color.g, color.b, 1.0f);
+	}
+	//aiColor3D color;
+	float SpecularExponent;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, SpecularExponent))
+	{
+		m.SpecularExponent = SpecularExponent / 4.0f;//为什么这里要除以4？
+	}
+
+	float BlendIntensity;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_OPACITY, BlendIntensity))
+	{
+		m.BlendIntensity = BlendIntensity;
+	}
+
+
+
+	// 1. diffuse maps
+	vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	// 2. specular maps
+	vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	// 3. normal maps
+	std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+	// 4. height maps
+	std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+	// return a mesh object created from the extracted mesh data
+
+	
+
+	
+
+
+	string name = mesh->mName.C_Str();
+	Mesh* n = new Mesh(name, vertices, indices, textures, shader_draw, m_r_helper);
+	n->SetFatherNode(this);
+	n->SetMaterialType(NORMAL);
+	n->SetMaterial(m);
+	//n->SetRender(this->m_r_helper);
+
+
+	//创建包围盒 
+	//for(int i =0; i<8;i++)
+	//{
+	//	vertices_round_box[i].Position.x = min_x;
+	//}
+
+	//vertices_round_box[0];
+	Vertex p;
+
+	p.Position.x = min_x;
+	p.Position.y = min_y;
+	p.Position.z = max_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = max_x;
+	p.Position.y = min_y;
+	p.Position.z = max_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = max_x;
+	p.Position.y = max_y;
+	p.Position.z = max_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = min_x;
+	p.Position.y = max_y;
+	p.Position.z = max_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = min_x;
+	p.Position.y = min_y;
+	p.Position.z = min_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = max_x;
+	p.Position.y = min_y;
+	p.Position.z = max_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = max_x;
+	p.Position.y = max_y;
+	p.Position.z = min_z;
+
+	n->BoundBoxVertices.push_back(p);
+
+	p.Position.x = min_x;
+	p.Position.y = max_y;
+	p.Position.z = min_z;
+	n->BoundBoxVertices.push_back(p);
+	n->SetBoundPoins(max_x, min_x, max_y, min_y, max_z, min_z);
+	/*
+	if(n->m_name == "door_r_f")
+	{
+		n->MakeCenterPoint(FACE_LEFT);
+	}
+	else
+	{
+		n->MakeCenterPoint(VOLUME_MIDDLE);
+	}
+	*/
+	
+	return n;
+}
+
+vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
+{
+	vector<Texture> textures;
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str);
+		// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+		bool skip = false;
+		for (unsigned int j = 0; j < textures_loaded.size(); j++)
+		{
+			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+			{
+				textures.push_back(textures_loaded[j]);
+				skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+				break;
+			}
+		}
+		if (!skip)
+		{   // if texture hasn't been loaded already, load it
+			int state = -1;
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), this->directory,state);
+			if (state == LOAD_SUCESSE) 
+			{
+				texture.type = typeName;
+				texture.path = str.C_Str();
+				textures.push_back(texture);
+				textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+			}
+			
+		}
+	}
+	return textures;
+}
+
+bool Model::CreateAnimation()
+{
+	//Animation* ani_wheel_turn;
+	string ani_n = "ani_wheel_turn";
+	Mesh* rf_wheel = meshes_map["Wheel_r_f"];
+	Mesh* lf_wheel = meshes_map["Wheel_l_f"];
+	Mesh* rb_wheel = meshes_map["Wheel_r_b"];
+	Mesh* lb_wheel = meshes_map["Wheel_l_b"];
+	Mesh* rfr_wheel = meshes_map["ring_r_f"];
+	Mesh* lfr_wheel = meshes_map["ring_l_f"];
+	Mesh* rbr_wheel = meshes_map["ring_r_b"];
+	Mesh* lbr_wheel = meshes_map["ring_l_b"];
+	Mesh* rds_wheel = meshes_map["diesha_r_f"];
+	Mesh* lds_wheel = meshes_map["diesha_l_f"];
+	vector<float*> temp;
+	temp.push_back(&(rf_wheel->angle_y));
+	temp.push_back(&(lf_wheel->angle_y));
+	temp.push_back(&(rfr_wheel->angle_y));
+	temp.push_back(&(lfr_wheel->angle_y));
+	temp.push_back(&(rds_wheel->angle_y));
+	temp.push_back(&(lds_wheel->angle_y));
+	test_ani = new Animation(ani_n, temp, 6, 45.0f,60);
+	vector<float*> temp1;
+	temp1.push_back(&(rf_wheel->angle_z));
+	temp1.push_back(&(lf_wheel->angle_z));
+	temp1.push_back(&(rb_wheel->angle_z));
+	temp1.push_back(&(lb_wheel->angle_z));
+	temp1.push_back(&(rfr_wheel->angle_z));
+	temp1.push_back(&(lfr_wheel->angle_z));
+	temp1.push_back(&(rbr_wheel->angle_z));
+	temp1.push_back(&(lbr_wheel->angle_z));
+	ani_n = "ani_wheel_run";
+	test_ani2 = new Animation(ani_n, temp1, 8, -1080.0f,200);
+
+	Mesh* r_door = meshes_map["door_r_f"];
+	Mesh* l_door = meshes_map["door_l_f"];
+	ani_n = "r_door_turn";
+	ani_rdoor = new Animation(ani_n, &r_door->angle_y, 80.0f, 60);
+	ani_n = "l_door_turn";
+	ani_ldoor = new Animation(ani_n, &l_door->angle_y, -80.0f, 60);
+
+
+
+	return true;
+	/*
+	ani = new Animation(ani_n, &(this->angle_y), 90);
+	if (!ani->CheckCreateOK())
+	{
+		delete ani;
+		ani = NULL;
+		return false;
+	}
+	else
+		test_ani = ani;
+	//test_ani = ani;
+	return true;
+	for (map<string, Mesh*>::iterator iter = meshes_map.begin(); iter != meshes_map.end(); ++iter)
+	{
+		if (iter->first == "Legs")
+		{
+			string ani_name = "ani_" + iter->first;
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_y), 80);
+
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_rdoor = ani;
+		}
+		if (iter->first == "hands")
+		{
+			string ani_name = "ani_" + iter->first;
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_y), -80);
+			//ani_ldoor = ani;
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_ldoor = ani;
+		}
+		if (iter->first == "Arms")
+		{
+			string ani_name = "ani_" + iter->first + "_run";
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_z), 360);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_rfwheel_run = ani;
+			ani_name = "ani_" + iter->first + "_turn";
+			ani = new Animation(ani_name, &(ani_mesh->angle_z), 80);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_rfwheel_turn = ani;
+		}
+		if (iter->first == "Body")
+		{
+			string ani_name = "ani_" + iter->first + "_run";
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_z), 360);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_lfwheel_run = ani;
+			ani_name = "ani_" + iter->first + "_turn";
+			ani = new Animation(ani_name, &(ani_mesh->angle_y), 80);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_lfwheel_turn = ani;
+		}
+		if (iter->first == "Helmet")
+		{
+			string ani_name = "ani_" + iter->first + "_run";
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_z), 360);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_rbwheel_run = ani;
+		}
+		if (iter->first == "Visor")
+		{
+			string ani_name = "ani_" + iter->first + "_run";
+			Mesh* ani_mesh = iter->second;
+			ani = new Animation(ani_name, &(ani_mesh->angle_z), 360);
+			if (!ani->CheckCreateOK())
+			{
+				delete ani;
+				ani = NULL;
+			}
+			else
+				ani_rbwheel_run = ani;
+		}
+
+	}
+	//ani_rdoor = Animation();
+
+	return true;
+	*/
+}
+
+
+
+
+void Model::SetModelName(const char* name)
+{
+	m_name = name;
+}
+
+void Model::SetupMats()
+{
+	//test_ani->update(0.0f);
+	return;
+	Scence* sc = (Scence*)FindScenceRoot((Node*)this);
+	//this->angle_y =2.5f;
+	float angle = this->angle_y*3.14f / 180;
+	m_world_mat = glm::mat4(1.0f);
+	this->m_pos = glm::vec3(0.0f, 0, 0.0f);
+	m_world_mat = glm::translate(m_world_mat, this->m_pos);
+	m_world_mat = glm::rotate(m_world_mat, this->angle_x, glm::vec3(0.1f, 0.0f, 0.0f));
+	m_world_mat = glm::rotate(m_world_mat, this->angle_y, glm::vec3(0.0f, 0.1f, 0.0f));
+	m_world_mat = glm::rotate(m_world_mat, this->angle_z, glm::vec3(0.0f, 0.0f, 0.0f));
+	
+	m_view_mat = sc->get_scence_view_mat();
+	m_projection_mat = sc->get_scence_projection_mat();
+	shader_draw->use();
+	shader_draw->setMat4("projection", m_projection_mat);
+	shader_draw->setMat4("view", m_view_mat);
+	shader_draw->setMat4("model", m_world_mat);
+
+}
+
+void Model::Draw()
+{
+	test_ani->update(0.0f);
+	test_ani2->update(0.0f);
+	ani_rdoor->update(0.0f);
+	ani_ldoor->update(0.0f);
+	SetupMats();
+	//this->m_pos = glm::vec3(0.0f, 0, 0.0f);
+
+//	meshes[2]->Draw(*shader_draw);
+//	meshes[3]->Draw(*shader_draw);
+//	meshes[11]->Draw(*shader_draw);
+//	meshes[14]->Draw(*shader_draw);
+//	meshes[15]->Draw(*shader_draw);
+//	meshes[16]->Draw(*shader_draw);
+//	meshes[17]->Draw(*shader_draw);
+//	meshes[18]->Draw(*shader_draw);
+//	meshes[19]->Draw(*shader_draw);
+	
+	for (unsigned int i = 0; i < meshes.size(); i++)
+		meshes[i]->Draw(*shader_draw);
+}
+
+void Model::Update(float delta_time)
+{
+	//test_ani->update(delta_time);
+	//test_ani2->update(delta_time);
+	//SetupMats();
+	/*
+	ani_rdoor->update(delta_time);
+	ani_ldoor->update(delta_time);
+	ani_rfwheel_run->update(delta_time);
+	ani_rfwheel_turn->update(delta_time);
+	ani_lfwheel_run->update(delta_time);
+	ani_lfwheel_turn->update(delta_time);
+	ani_rbwheel_run->update(delta_time);
+	ani_lbwheel_run->update(delta_time);
+	*/
+}
+
+
+
+void Model::set_r_helper(RenderHelper* r_helper)
+{
+	m_r_helper = r_helper;
+	s_helper = m_r_helper->m_s_helper;
+	t_helper = m_r_helper->m_t_helper;
+	p_helper = m_r_helper->m_p_helper;
+	d_helper = m_r_helper->m_d_helper;
+}
+
+

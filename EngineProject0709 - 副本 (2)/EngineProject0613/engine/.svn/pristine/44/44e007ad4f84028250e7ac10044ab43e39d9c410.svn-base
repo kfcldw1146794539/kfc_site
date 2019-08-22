@@ -1,0 +1,16 @@
+﻿  glad.c
+  windows.cpp
+c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(130): warning C4005: “APIENTRY”: 宏重定义
+  f:\work\yuan\opengles\glfw_model\windows_es\include\glfw\glfw3.h(104): note: 参见“APIENTRY”的前一个定义
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(129): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(254): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(255): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(260): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(261): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(264): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(265): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(275): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(276): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\opengles\glfw_model\windows_es\es_windows\es_windows\windows.cpp(311): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  es_windows.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\es_windows.exe
+  es_windows.vcxproj -> F:\work\yuan\opengles\glfw_model\windows_ES\es_windows\Debug\es_windows.pdb (Partial PDB)

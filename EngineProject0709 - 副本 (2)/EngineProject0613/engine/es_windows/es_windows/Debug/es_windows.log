@@ -1,0 +1,15 @@
+﻿  windows.cpp
+c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(130): warning C4005: “APIENTRY”: 宏重定义
+  f:\work\yuan\engineproject\engine\include\glfw\glfw3.h(104): note: 参见“APIENTRY”的前一个定义
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(129): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(268): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(269): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(274): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(275): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(278): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(279): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(289): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(290): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+f:\work\yuan\engineproject\engine\es_windows\es_windows\windows.cpp(336): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  es_windows.vcxproj -> F:\work\yuan\EngineProject\engine\es_windows\Debug\es_windows.exe
+  es_windows.vcxproj -> F:\work\yuan\EngineProject\engine\es_windows\Debug\es_windows.pdb (Partial PDB)

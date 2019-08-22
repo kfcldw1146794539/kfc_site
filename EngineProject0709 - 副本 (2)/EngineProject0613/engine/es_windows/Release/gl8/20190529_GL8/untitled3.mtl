@@ -1,0 +1,125 @@
+# Blender MTL File: 'None'
+# Material Count: 11
+
+newmtl CarBody
+Ns 9.803922
+Ka 0.000 0.000 0.000
+Kd 0.015700 0.015700 0.015700 
+Ks 0.0588 0.0588 0.0588 
+Ke 0.000000 0.000000 0.000000
+Ni 0.2
+d 1.000000
+illum 2
+map_Kd CarBody_BaseColor.tga
+map_Bump CarBody_Normal.tga
+map_Ka CarBody_BaseColor.tga
+
+newmtl Car_CenterControl
+Ns 9.803922
+Ka 0.588200 0.588200 0.588200
+Kd 0.588200 0.588200 0.588200
+Ks 0.045000 0.045000 0.045000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Car_Interior_BaseColor.tga
+map_Bump Car_Interior_Normal.tga
+map_Ka Car_Interior_BaseColor.tga
+
+newmtl Car_DamBoard
+Ns 9.803922
+Ka 0.062700 0.062700 0.062700
+Kd 0.062700 0.062700 0.062700
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 0.000000
+d 1.000000
+illum 2
+
+newmtl Car_FrontrRail
+Ns 9.803922
+Ka 0.000 0.000 0.000
+Kd 0.017500 0.017500 0.017500
+Ks 0.000 0.000 0.000
+Ke 0.000000 0.000000 0.000000
+Ni 0.2
+d 1.000000
+illum 2
+
+newmtl Car_MetalStrip_
+Ns 2.46229
+Ka 0.024 0.024 0.024 
+Kd 0.0274 0.0274 0.0274 
+Ks 0.0196 0.0196 0.0196 
+Ke 0.000000 0.000000 0.000000
+Ni 0.8
+d 1.000000
+illum 2
+
+newmtl Whee
+Ns 0.000000
+Ka 0.588200 0.588200 0.588200
+Kd 0.588200 0.588200 0.588200
+Ks 0.090000 0.090000 0.090000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Car_Wheels_BaseColor.tga
+map_Bump Car_Wheels_Normal.tga
+map_Ka Car_Wheels_BaseColor.tga
+
+newmtl chebiao_f1
+Ns 29.411765
+Ka 0.397367 0.397367 0.397367
+Kd 0.254900 0.274500 0.662700
+Ks 0.720000 0.720000 0.720000
+Ke 0.000000 0.000000 0.000000
+Ni 0.100000
+d 1.000000
+illum 2
+
+newmtl chebiao_f2
+Ns 29.411765
+Ka 0.913733 0.913733 0.913733
+Kd 0.882400 0.929400 0.929400
+Ks 0.720000 0.720000 0.720000
+Ke 0.000000 0.000000 0.000000
+Ni 0.100000
+d 1.000000
+illum 2
+
+newmtl chebiao_f3
+Ns 29.411765
+Ka 0.490200 0.490200 0.490200
+Kd 0.960800 0.254900 0.254900
+Ks 0.720000 0.720000 0.720000
+Ke 0.000000 0.000000 0.000000
+Ni 0.100000
+d 1.000000
+illum 2
+
+newmtl dengxijei
+Ns 9.803922
+Ka 0.588200 0.588200 0.588200
+Kd 0.588200 0.588200 0.588200
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd dengxijie_BaseColor.tga
+map_Bump dengxijie_Normal.tga
+map_Ka dengxijie_BaseColor.tga
+
+newmtl windows
+Ns 9.803922
+Ka 0.01200 0.01200 0.01200
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 0.600000
+d 0.70000
+illum 2
+

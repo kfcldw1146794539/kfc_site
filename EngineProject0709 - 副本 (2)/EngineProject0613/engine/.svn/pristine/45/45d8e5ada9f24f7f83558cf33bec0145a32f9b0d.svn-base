@@ -1,0 +1,624 @@
+#include"mesh2.h"
+#include"ScenceManager.h"
+
+
+
+Mesh::Mesh(string name, vector<Vertex> vertices, vector<unsigned short> indices, vector<Texture> textures, Shader*shader, RenderHelper* render_helper)
+{
+
+	m_name = name;
+	m_type = MESH;
+	this->vertices = vertices;
+	this->indices = indices;
+	this->textures = textures;
+	ourShader = shader;
+	m_renderer = render_helper;
+
+	if (textures.size() == 0)
+	{
+		m_material_type = PHONG;
+		ourShader->use(PHONG);
+		//this->visible = false;
+	}
+	else
+	{
+		m_material_type = PHONG_TEX;
+		ourShader->use(PHONG_TEX);
+	}
+
+//	else
+//	{
+//		m_material_type = NORMAL;
+//		ourShader->use(NORMAL);
+//	}
+	
+	positionLoc = m_renderer->m_p_helper->g_p_p_func(ourShader->ID, "aPos");
+	//positionLoc = glGetAttribLocation(ourShader->ID, "aPos");
+	normalLoc = m_renderer->m_p_helper->g_p_p_func(ourShader->ID, "aNormal");
+	//normalLoc = glGetAttribLocation(ourShader->ID, "aNormal");
+	texCoordLoc = m_renderer->m_p_helper->g_p_p_func(ourShader->ID, "aTexCoords");
+	//texCoordLoc = glGetAttribLocation(ourShader->ID, "aTexCoords");
+	tangentLoc = m_renderer->m_p_helper->g_p_p_func(ourShader->ID, "aTangent");
+	//tangentLoc = glGetAttribLocation(ourShader->ID, "aTangent");
+	bitangentLoc = m_renderer->m_p_helper->g_p_p_func(ourShader->ID, "aBitangent");
+	//bitangentLoc = glGetAttribLocation(ourShader->ID, "aBitangent");
+	// now that we have all the required data, set the vertex buffers and its attribute pointers.
+
+	
+	m_bound_visible = false;
+
+	setupMesh();
+
+	//setupBoundMeshMesh();
+}
+
+Mesh::~Mesh()
+{
+	delete m_BoundShader;
+}
+
+void Mesh::SetMeshName(const char* name)
+{
+	m_name = name;
+}
+
+void Mesh::SetMaterialType(ShaderType m)
+{
+	m_material_type = m;
+}
+
+void Mesh::SetMaterial(Material& m)
+{
+	m_material = m;
+}
+
+
+void Mesh::SetupMats()
+{
+	//test_ani->update(0.0f);
+	//return;
+	Scence* sc = (Scence*)FindScenceRoot((Node*)this);
+	//this->angle_y =2.5f;
+	//this->angle_y = 0;
+	float r_angle_y = this->angle_y*3.14f / 180;
+
+	//this->angle_x = 0;
+	float r_angle_x = this->angle_x*3.14f / 180;
+
+	//this->angle_z = 0;
+	float r_angle_z = this->angle_z*3.14f / 180;
+
+	m_world_mat = glm::mat4(1.0f);
+	//this->m_pos = glm::vec3(0.0f, 0, 0.0f);
+//	if (this->m_name == "CarBody")
+//	{
+//		
+//		this->angle_y = 45;
+		//this->angle_y = this->angle_y*3.14f / 180;
+		//this->m_pos = glm::vec3(0.0f, 0.0f, 0.0f);
+		//this->m_pos.z += 1.0f;
+//	}
+
+	
+	//m_world_mat = glm::translate(m_world_mat, this->m_root->m_pos);
+	m_world_mat = glm::mat4(1.0);
+	glm::mat4  mat_tran = glm::mat4(1.0);
+	glm::vec3 pos_temp;
+	pos_temp.x = -this->m_pos.x; 
+	pos_temp.y = -this->m_pos.y;
+	pos_temp.z = -this->m_pos.z;
+	
+	//m_world_mat = glm::translate(m_world_mat, glm::vec3(0.0f, 0.0f, 0.0f));
+	m_world_mat = glm::translate(m_world_mat, this->m_pos);
+	m_world_mat = glm::rotate(m_world_mat, r_angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	m_world_mat = glm::rotate(m_world_mat, r_angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_world_mat = glm::rotate(m_world_mat, r_angle_z, glm::vec3(0.0f, 0.0f, 1.0f));
+	
+	m_world_mat = glm::translate(m_world_mat, pos_temp);
+	//m_world_mat = glm::scale(m_world_mat, glm::vec3(0.5f, 0.5f, 0.5f));
+
+	m_view_mat = sc->get_scence_view_mat();
+	m_projection_mat = sc->get_scence_projection_mat();
+
+
+	//ourShader->use();
+	//ourShader->setMat4("projection", m_projection_mat);
+	//ourShader->setMat4("view", m_view_mat);
+	//ourShader->setMat4("model", m_world_mat);
+	if (m_material_type == NORMAL)
+	{
+		ourShader->use(NORMAL);
+		ourShader->setMat4("projection", m_projection_mat);
+		ourShader->setMat4("view", m_view_mat);
+		ourShader->setMat4("model", m_world_mat);
+		ourShader->setFloat("BlendIntensity", m_material.BlendIntensity);
+		//ourShader->setFloat("BlendIntensity", 1.0f);
+
+
+		ourShader->setVec4_2("Ambient", m_material.Kambient);
+
+		ourShader->setVec4_2("Diffuse", m_material.Kdiffuse);
+
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+
+		ourShader->setVec4_2("SpecularColor", m_material.KspecularColor);
+		ourShader->setFloat("SpecularExponent", m_material.SpecularExponent);
+
+	}
+	if (m_material_type == 11)
+	{
+		if (this->visible == false)
+			return;
+		//ourShader->setMat4("projection", m_projection_mat);
+		//ourShader->setMat4("view", m_view_mat);
+		ourShader->use(PHONG);
+		glm::mat4 MVP = m_projection_mat*m_view_mat*m_world_mat;
+//		ourShader->setMat4("kzProjectionCameraWorldMatrix", MVP);
+//		ourShader->setMat4("kzWorldMatrix", m_world_mat);
+//		glm::vec3 cam_pos= sc->get_camera_pos();
+//		ourShader->setVec3("kzCameraPosition", cam_pos);
+//		glm::mat4  normal_mat = glm::mat4(1.0);
+//		normal_mat = glm::transpose(glm::inverse(m_world_mat));
+//		ourShader->setMat4("kzNormalMatrix", m_world_mat);
+
+
+		ourShader->setMat4("projection", m_projection_mat);
+		ourShader->setMat4("view", m_view_mat);
+		ourShader->setMat4("model", m_world_mat);
+//		ourShader->setFloat("BlendIntensity", m_material.BlendIntensity);
+
+		ourShader->setFloat("BlendIntensity", m_material.BlendIntensity);
+		//ourShader->setFloat("BlendIntensity", 1.0f);
+		ourShader->setVec3_2("viewPos", sc->get_camera_pos());
+		glm::vec3 lightPos(100.0f, 100.0f, 100.0f);
+		ourShader->setVec3_2("Lposition", lightPos);
+
+		// light properties
+		ourShader->setVec3("Lambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
+		ourShader->setVec3("Ldiffuse", 1.0f, 1.0f, 1.0f);
+		ourShader->setVec3("Lspecular", 1.0f, 1.0f, 1.0f);
+
+		ourShader->setVec4_2("Ambient", m_material.Kambient);
+
+		glm::vec4 kd(1.0, 0.0, 0.0, 1.0);
+
+
+
+		ourShader->setVec4_2("Diffuse", m_material.Kdiffuse);
+
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+
+		ourShader->setVec4_2("SpecularColor", m_material.KspecularColor);
+		ourShader->setFloat("SpecularExponent", m_material.SpecularExponent);
+	}
+	if (m_material_type == PHONG)
+	{
+		if (this->visible == false)
+			return;
+		ourShader->use(PHONG);
+		glm::mat4 MVP = m_projection_mat*m_view_mat*m_world_mat;
+		ourShader->setMat4("kzProjectionCameraWorldMatrix", MVP);
+		ourShader->setMat4("kzWorldMatrix", m_world_mat);
+		glm::vec3 cam_pos= sc->get_camera_pos();
+		ourShader->setVec3_2("kzCameraPosition", cam_pos);
+		glm::mat4  normal_mat = glm::mat4(1.0);
+		normal_mat = glm::transpose(glm::inverse(m_world_mat));
+		ourShader->setMat4("kzNormalMatrix", m_world_mat);
+
+		glm::vec3 point_light1(50.0f, 0.0f, 0.0f);
+		//ourShader->setVec3_2("PointLightPosition[0]", point_light1);
+		glm::vec4 point_light_color1(0.0f, 1.0f, 0.0f, 1.0f);
+		//ourShader->setVec4_2("PointLightColor[0]", point_light_color1);
+		glm::vec3 point_Attenuation1(1.0f, 0.0f, 0.0f);
+		//ourShader->setVec3_2("PointLightAttenuation[0]", point_Attenuation1);
+
+		glm::vec3 point_light2(-20.0f, 20.0f, 20.0f);
+		//ourShader->setVec3_2("PointLightPosition[1]", point_light2);
+		glm::vec4 point_light_color2(1.0f, 1.0f, 1.0f, 1.0f);
+		//ourShader->setVec4_2("PointLightColor[1]", point_light_color2);
+		glm::vec3 point_Attenuation2(20.0f, 20.0f, 20.0f);
+		//ourShader->setVec3_2("PointLightAttenuation[1]", point_Attenuation2);
+
+		glm::vec4 direction_light_color(1.0f, 1.0f, 1.0f, 1.0f);
+		ourShader->setVec4_2("DirectionalLightColor[0]", direction_light_color);
+
+		glm::vec3 directional_light_direction(1.0f, 0.0f, 0.0f);
+		ourShader->setVec3_2("DirectionalLightDirection[0]", directional_light_direction);
+
+		ourShader->setFloat("BlendIntensity", m_material.BlendIntensity);
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+
+		ourShader->setVec4_2("Ambient", m_material.Kambient);
+		ourShader->setVec4_2("Diffuse", m_material.Kdiffuse);
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+		ourShader->setVec4_2("SpecularColor", m_material.KspecularColor);
+		ourShader->setFloat("SpecularExponent", m_material.SpecularExponent);
+
+	}
+
+	if (m_material_type == PHONG_TEX)
+	{
+		if (this->visible == false)
+			return;
+		ourShader->use(PHONG_TEX);
+		glm::mat4 MVP = m_projection_mat*m_view_mat*m_world_mat;
+		ourShader->setMat4("kzProjectionCameraWorldMatrix", MVP);
+		ourShader->setMat4("kzWorldMatrix", m_world_mat);
+		glm::vec3 cam_pos = sc->get_camera_pos();
+		ourShader->setVec3_2("kzCameraPosition", cam_pos);
+		glm::mat4  normal_mat = glm::mat4(1.0);
+		normal_mat = glm::transpose(glm::inverse(m_world_mat));
+		ourShader->setMat4("kzNormalMatrix", m_world_mat);
+
+		glm::vec3 point_light1(50.0f, 0.0f, 0.0f);
+		//ourShader->setVec3_2("PointLightPosition[0]", point_light1);
+		glm::vec4 point_light_color1(0.0f, 1.0f, 0.0f, 1.0f);
+		//ourShader->setVec4_2("PointLightColor[0]", point_light_color1);
+		glm::vec3 point_Attenuation1(1.0f, 0.0f, 0.0f);
+		//ourShader->setVec3_2("PointLightAttenuation[0]", point_Attenuation1);
+
+		glm::vec3 point_light2(-20.0f, 20.0f, 20.0f);
+		//ourShader->setVec3_2("PointLightPosition[1]", point_light2);
+		glm::vec4 point_light_color2(1.0f, 1.0f, 1.0f, 1.0f);
+		//ourShader->setVec4_2("PointLightColor[1]", point_light_color2);
+		glm::vec3 point_Attenuation2(20.0f, 20.0f, 20.0f);
+		//ourShader->setVec3_2("PointLightAttenuation[1]", point_Attenuation2);
+
+		glm::vec4 direction_light_color(1.0f, 1.0f, 1.0f, 1.0f);
+		ourShader->setVec4_2("DirectionalLightColor[0]", direction_light_color);
+
+		glm::vec3 directional_light_direction(-1.0f, 0.0f, 0.0f);
+		ourShader->setVec3_2("DirectionalLightDirection[0]", directional_light_direction);
+
+		ourShader->setFloat("BlendIntensity", m_material.BlendIntensity);
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+
+		ourShader->setVec4_2("Ambient", m_material.Kambient);
+		ourShader->setVec4_2("Diffuse", m_material.Kdiffuse);
+		ourShader->setVec4_2("Emissive", m_material.Kemissive);
+		ourShader->setVec4_2("SpecularColor", m_material.KspecularColor);
+		ourShader->setFloat("SpecularExponent", m_material.SpecularExponent);
+
+	}
+
+}
+/*
+void Mesh::SetupMats()
+{
+	//return;
+	Scence* sc = (Scence*)FindScenceRoot((Node*)this);
+	//this->angle_y =2.5f;
+	float angle = this->angle_y*3.14f / 180;
+	m_world_mat = glm::mat4(1.0f);
+	glm::vec3 father_pos = this->m_root->m_pos;
+	m_world_mat = glm::translate(m_world_mat, father_pos);
+	m_world_mat = glm::translate(m_world_mat, this->m_pos);
+//	m_world_mat = glm::rotate(m_world_mat, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+//	m_world_mat = glm::scale(m_world_mat, glm::vec3(0.05f, 0.05f, 0.05f));
+
+	m_view_mat = sc->get_scence_view_mat();
+	m_projection_mat = sc->get_scence_projection_mat();
+	//ourShader->use();
+	//ourShader->setMat4("projection", m_projection_mat);
+	//ourShader->setMat4("view", m_view_mat);
+	//ourShader->setMat4("model", m_world_mat);
+
+}
+
+*/
+
+
+void Mesh::DrawBound()
+{
+	//return;
+	m_BoundShader->use();
+	m_BoundShader->setMat4("projection", m_projection_mat);
+	m_BoundShader->setMat4("view", m_view_mat);
+	m_BoundShader->setMat4("model", m_world_mat);
+	setupBoundMeshProperty();
+	m_renderer->m_d_helper->d_a_func(BoundBoxVertices.size());
+}
+
+// render the mesh
+void Mesh::Draw(Shader shader)
+{
+
+	SetupMats();
+	if (this->visible == false)
+		return;
+	// bind appropriate textures
+	unsigned int diffuseNr = 1;
+	unsigned int specularNr = 1;
+	unsigned int normalNr = 1;
+	unsigned int heightNr = 1;
+	if (this->m_name == "Car_Windows")
+	{
+		int a = 0;
+	}
+	for (unsigned int i = 0; i < textures.size(); i++)
+	{
+		m_renderer->m_t_helper->a_t_func(i);
+		//t_helper->a_t_func(i);
+		//			glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+		// retrieve texture number (the N in diffuse_textureN)
+		string number;
+		string name = textures[i].type;
+		if (name == "texture_diffuse")
+			number = std::to_string(diffuseNr++);
+		else if (name == "texture_specular")
+			number = std::to_string(specularNr++); // transfer unsigned int to stream
+		else if (name == "texture_normal")
+			number = std::to_string(normalNr++); // transfer unsigned int to stream
+		else if (name == "texture_height")
+			number = std::to_string(heightNr++); // transfer unsigned int to stream
+
+												 // now set the sampler to the correct texture unit
+		m_renderer->m_t_helper->b_g_t_func(textures[i].id);
+		//t_helper->b_g_t_func(textures[i].id);
+		//glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		int pos = m_renderer->m_t_helper->g_f_u_p_func(shader.ID, (name + number).c_str());
+		//int pos = t_helper->g_f_u_p_func(shader.ID, (name + number).c_str());
+		m_renderer->m_t_helper->l_f_u_func(pos, i);
+		//t_helper->l_f_u_func(pos, i);
+		//glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+		// and finally bind the texture
+
+	}
+
+	setupMeshProperty();
+	// draw mesh
+	//glBindVertexArray(VAO);
+	m_renderer->m_d_helper->d_e_func(indices.size());
+	//d_helper->d_e_func(indices.size());
+	//		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
+	//glBindVertexArray(0);
+
+	// always good practice to set everything back to defaults once configured.
+	m_renderer->m_t_helper->a_t_func(0);
+	//t_helper->a_t_func(0);
+	//glActiveTexture(GL_TEXTURE0);
+
+	if (m_bound_visible)
+		DrawBound();
+}
+
+void Mesh::SetRender(RenderHelper* renderer)
+{
+	m_renderer = renderer;
+}
+
+void Mesh::ChangeShader(Shader* s)
+{
+	ourShader = s;
+}
+
+void Mesh::setupMeshProperty()
+{
+
+
+	//glGenBuffers(1, &VBO);
+	//glGenBuffers(1, &EBO);
+
+	//glBindVertexArray(VAO);
+	// load data into vertex buffers
+	m_renderer->m_p_helper->b_p_b_func(VBO, EBO);
+	//p_helper->b_p_b_func(VBO, EBO);
+
+	//		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+
+	//		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+	m_renderer->m_p_helper->p_p_p_func(positionLoc, 3, sizeof(Vertex), (void*)0);
+	//p_helper->p_p_p_func(positionLoc, 3, sizeof(Vertex), (void*)0);
+	// set the vertex attribute pointers
+	// vertex Positions
+	//		glEnableVertexAttribArray(positionLoc);
+	//		glVertexAttribPointer(positionLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	// vertex normals
+
+	m_renderer->m_p_helper->p_p_p_func(normalLoc, 3, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	//p_helper->p_p_p_func(normalLoc, 3, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	//		glEnableVertexAttribArray(normalLoc);
+	//		glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	// vertex texture coords
+
+	m_renderer->m_p_helper->p_p_p_func(texCoordLoc, 2, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	//		glEnableVertexAttribArray(texCoordLoc);
+	//		glVertexAttribPointer(texCoordLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	// vertex tangent
+
+	m_renderer->m_p_helper->p_p_p_func(tangentLoc, 3, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+	//		glEnableVertexAttribArray(tangentLoc);
+	//		glVertexAttribPointer(tangentLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+	//// vertex bitangent
+
+	m_renderer->m_p_helper->p_p_p_func(bitangentLoc, 3, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+	//		glEnableVertexAttribArray(bitangentLoc);
+	//		glVertexAttribPointer(bitangentLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+}
+void Mesh::setupMesh()
+{
+	m_renderer->m_p_helper->g_p_b_func(VBO, EBO, vertices, indices);
+
+	/*
+
+
+	// create buffers/arrays
+	//glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	//glBindVertexArray(VAO);
+	// load data into vertex buffers
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// A great thing about structs is that their memory layout is sequential for all its items.
+	// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+	// again translates to 3/2 floats which translates to a byte array.
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
+
+
+
+	//glBindVertexArray(0);
+
+	*/
+}
+
+
+void Mesh::SetBoundPoins(float max_x, float min_x, float max_y, float min_y, float max_z, float min_z)
+{
+	n_bound_point_max_x = max_x;
+	n_bound_point_min_x = min_x;
+	n_bound_point_max_y = max_y;
+	n_bound_point_min_y = min_y;
+	n_bound_point_max_z = max_z;
+	n_bound_point_min_z = min_z;
+}
+
+void Mesh::MakeCenterPoint(int cen_pos_type)
+{
+	//return;
+
+	float x_c = n_bound_point_max_x + n_bound_point_min_x / 2;
+	float y_c = n_bound_point_max_y + n_bound_point_min_y / 2;
+	float z_c = n_bound_point_max_z + n_bound_point_min_z / 2;
+
+	float xx, yy, zz;
+	xx = x_c;
+	yy = y_c;
+	zz = z_c;
+
+	Vertex v;
+	Vertex v2;
+	
+	if(cen_pos_type == VOLUME_MIDDLE)
+	{
+		v = BoundBoxVertices.at(0);
+		v2 = BoundBoxVertices.at(2);
+		float x = (v.Position.x + v2.Position.x) / 2;
+		float y = (v.Position.y + v2.Position.y) / 2;
+		float z = (v.Position.z + v2.Position.z) / 2;
+
+
+		v = BoundBoxVertices.at(4);
+		v2 = BoundBoxVertices.at(6);
+		float x1 = (v.Position.x + v2.Position.x) / 2;
+		float y1 = (v.Position.y + v2.Position.y) / 2;
+		float z1 = (v.Position.z + v2.Position.z) / 2;
+		this->m_pos.x = (x+x1)/2;
+		this->m_pos.y = (y+y1)/2;
+		this->m_pos.z = (z+z1)/2;
+
+
+		//this->m_pos.x = x;
+		//this->m_pos.y = y;
+		//this->m_pos.z = z;
+	}
+
+	if (cen_pos_type == FACE_FRONT)
+	{
+		v = BoundBoxVertices.at(0);
+		v2 = BoundBoxVertices.at(2);
+		float x = (v.Position.x +v2.Position.x) / 2;
+		float y = (v.Position.y + v2.Position.y) / 2;
+		float z = (v.Position.z + v2.Position.z) / 2;
+		this->m_pos.x = x;
+		this->m_pos.y = y;
+		this->m_pos.z = z;
+	}
+	if (cen_pos_type == FACE_BACK)
+	{
+		v = BoundBoxVertices.at(4);
+		v2 = BoundBoxVertices.at(6);
+		float x = (v.Position.x +v2.Position.x) / 2;
+		float y = (v.Position.y +v2.Position.y) / 2;
+		float z = (v.Position.z +v2.Position.z) / 2;
+		this->m_pos.x = x;
+		this->m_pos.y = y;
+		this->m_pos.z = z;
+	}
+	if (cen_pos_type == FACE_LEFT)
+	{
+
+
+		v = BoundBoxVertices.at(0);
+		v2 = BoundBoxVertices.at(3);
+		float x = (v.Position.x + v2.Position.x) / 2;
+		float y = (v.Position.y + v2.Position.y) / 2;
+		float z = (v.Position.z + v2.Position.z) / 2;
+
+
+		v = BoundBoxVertices.at(4);
+		v2 = BoundBoxVertices.at(7);
+		float x1 = (v.Position.x + v2.Position.x) / 2;
+		float y1 = (v.Position.y + v2.Position.y) / 2;
+		float z1 = (v.Position.z + v2.Position.z) / 2;
+		this->m_pos.x = (x + x1) / 2;
+		this->m_pos.y = (y + y1) / 2;
+		this->m_pos.z = (z + z1) / 2;
+
+
+
+	}
+	if (cen_pos_type == FACE_RIGHT)
+	{
+		v = BoundBoxVertices.at(1);
+		v2 = BoundBoxVertices.at(2);
+		float x = (v.Position.x + v2.Position.x) / 2;
+		float y = (v.Position.y + v2.Position.y) / 2;
+		float z = (v.Position.z + v2.Position.z) / 2;
+
+
+		v = BoundBoxVertices.at(5);
+		v2 = BoundBoxVertices.at(6);
+		float x1 = (v.Position.x + v2.Position.x) / 2;
+		float y1 = (v.Position.y + v2.Position.y) / 2;
+		float z1 = (v.Position.z + v2.Position.z) / 2;
+		this->m_pos.x = (x + x1) / 2;
+		this->m_pos.y = (y + y1) / 2;
+		this->m_pos.z = (z + z1) / 2;
+	}
+	if (cen_pos_type == FACE_TOP)
+	{
+		v = BoundBoxVertices.at(3);
+		v2 = BoundBoxVertices.at(6);
+		float x = (v.Position.x +v2.Position.x) / 2;
+		float y = (v.Position.y +v2.Position.y) / 2;
+		float z = (v.Position.z +v2.Position.z) / 2;
+		this->m_pos.x = x;
+		this->m_pos.y = y;
+		this->m_pos.z = z;
+	}
+	if (cen_pos_type == FACE_BUTTOM)
+	{
+		v = BoundBoxVertices.at(0);
+		v2 = BoundBoxVertices.at(5);
+		float x = (v.Position.x + v2.Position.x) / 2;
+		float y = (v.Position.y + v2.Position.y) / 2;
+		float z = (v.Position.z + v2.Position.z) / 2;
+		this->m_pos.x = x;
+		this->m_pos.y = y;
+		this->m_pos.z = z;
+	}
+
+	setupBoundMeshMesh();
+}
+
+
+void Mesh::setupBoundMeshProperty()
+{
+	m_renderer->m_p_helper->b_b_p_v_func(BoundVBO);
+	m_renderer->m_p_helper->p_p_p_func(b_positionLoc, 3, sizeof(Vertex), (void*)0);
+}
+void Mesh::setupBoundMeshMesh()
+{
+	m_BoundShader = new BoundShaer("", "", m_renderer->m_s_helper);
+	//m_BoundShader->m_s_helper = m_renderer->m_s_helper;
+	b_positionLoc = m_renderer->m_p_helper->g_p_p_func(m_BoundShader->ID, "aPos");
+    //m_renderer->m_p_helper->g_b_p_p_func(BoundVBO, BoundBoxVertices);
+}

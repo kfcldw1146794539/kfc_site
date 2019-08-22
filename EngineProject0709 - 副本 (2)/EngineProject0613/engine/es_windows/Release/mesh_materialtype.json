@@ -1,0 +1,123 @@
+{
+  "CarBody": "PHONG_CUB",
+
+  "Car_Taillights": "PHONG_CUB",
+
+  "Car_Bottom": "PHONG_TEX_CUB",
+
+  "Car_Bumper": "PHONG_TEX",
+
+  "Car_Grill": "PHONG_TEX_CUB",
+
+  "Car_HeadlightsGlass": "PHONG_CUB",
+
+  "Car_CenterControl": "Physically_Based",
+  "Car_BlackInternal": "Physically_Based",
+  "Car_Seat": "Physically_Based",
+  "Car_MetalStrip_": "PHONG_TEX_CUB",
+  "Car_Interior": "Physically_Based",
+
+  "Car_Windows": "PHONG_CUB",
+
+  "CarBadge": "PHONG_TEX_CUB",
+
+  "dengxijie": "Physically_Based", 
+
+  "defaultobject": "PHONG_TEX_CUB",
+
+  "diasha_l_f": "PHONG_TEX",
+
+  "diasha_r_f": "PHONG_TEX",
+
+  "deng_r_glass1": "PHONG_CUB",
+
+  "light_l_f": "PHONG_TEX",
+
+  "light_r_b": "PHONG",
+
+  "light_r_f": "PHONG_TEX",
+
+  "ring_l_b": "PHONG_TEX_CUB",
+
+  "ring_l_f": "PHONG_TEX_CUB",
+
+  "ring_r_b": "PHONG_TEX_CUB",
+
+  "ring_r_f": "PHONG_TEX_CUB",
+
+  "Shadowplane": "PHONG_TEX",
+
+  "Car_Wheels": "Physically_Based",
+
+  "Wheel_l_b_back": "Physically_Based",
+
+  "Wheel_l_b_front": "Physically_Based",
+
+  "Wheel_l_f_back": "Physically_Based",
+
+  "Wheel_l_f_front": "Physically_Based",
+
+  "Wheel_r_b_back": "Physically_Based",
+
+  "Wheel_r_b_front": "Physically_Based",
+
+  "Wheel_r_f_back": "Physically_Based",
+
+  "Wheel_r_f_front": "Physically_Based",
+
+  "bonnet": "PHONG_CUB",
+  "Car_DamBoard": "PHONG_CUB",
+  "Car_FrontrRail": "PHONG_CUB",
+
+  "chebiao_f1": "PHONG_TEX_CUB",
+  "chebiao_f2": "PHONG_CUB",
+  "chebiao_f3": "PHONG_CUB",
+  "chebiao_f1_b": "PHONG_CUB",
+  "chebiao_f2_b": "PHONG_CUB",
+  "chebiao_f3_b": "PHONG_CUB",
+  "chebiao_b": "PHONG_TEX_CUB",
+
+
+  "deng_r_glass1": "PHONG_CUB",
+  "deng_r_nei1": "Physically_Based",
+  "deng_f_nei": "Physically_Based",
+
+  "door_l_back": "PHONG_CUB",
+  "door_l_back_other_1": "PHONG_CUB",
+  "door_l_back_other_2": "PHONG_TEX_CUB",
+  "door_l_back_other_3": "Physically_Based",
+  "door_l_back_window": "PHONG_CUB",
+
+  "door_l_front": "PHONG_CUB",
+  "door_l_front_other_1": "PHONG_CUB",
+  "door_l_front_other_2": "PHONG_TEX_CUB",
+  "door_l_front_other_3": "Physically_Based",
+  "door_l_front_window": "PHONG_CUB",
+
+  "body_men_r_r": "PHONG_CUB",
+
+  "door_r_back": "PHONG_CUB",
+  "door_r_back_other_1": "PHONG_CUB",
+  "door_r_back_other_2": "PHONG_TEX_CUB",
+  "door_r_back_other_3": "Physically_Based",
+  "door_r_back_window": "PHONG_CUB",
+
+  "door_r_front": "PHONG_CUB",
+  "door_r_front_other_1": "PHONG_CUB",
+  "door_r_front_other_2": "PHONG_TEX_CUB",
+  "door_r_front_other_3": "Physically_Based",
+  "door_r_front_window": "PHONG_CUB",
+
+  "front_skylight": "PHONG_CUB",
+  "back_skylight": "PHONG_CUB",
+  "trunk": "PHONG_CUB",
+  "trunk_others": "PHONG_CUB",
+  "trunk_others_1": "PHONG_TEX_CUB",
+  "trunk_others_2": "Physically_Based",
+
+  "trunk_window": "PHONG_CUB",
+  "windows": "PHONG_CUB",
+  "Wheel_r_f": "NORMAL"
+
+}
+

@@ -1,0 +1,10 @@
+
+{
+"Scence":[
+	  {"nanosuit":	[	
+			{"mesh_url":"F:/work/yuan/opengles/glfw_model/windows_ES/es_windows/Debug/car20/cahr2000.obj"},
+			{"vs_url":"F:/work/yuan/opengles/glfw_model/windows_ES/es_windows/Debug/1.model_loading.vs"},
+			{"fs_url":"F:/work/yuan/opengles/glfw_model/windows_ES/es_windows/Debug/1.model_loading.fs"}
+			]}
+	]
+}

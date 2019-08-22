@@ -1,0 +1,89 @@
+#pragma once
+using namespace std;
+
+
+#include<list>
+#include<map>
+#include<string>
+#include <rapidjson/document.h>
+#include"camera.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+using namespace rapidjson;
+
+#include"Node.h"
+//#include"model.h"
+
+//#include"Includes.h"
+
+
+
+
+class Model;
+
+class Scence : public Node
+{
+public :
+	Scence();
+	~Scence();
+
+	void InitScence();
+
+	bool LoadModel(const char* url);
+
+	bool LoadModel(Value::ConstValueIterator json);
+
+	void Updete(float delta_time);
+
+
+	void updatakeyborad(char * direction, float deltaTime);
+
+	void updatamousemovement(float xoffset, float yoffset);
+
+	void updataMouseScroll( float yoffset);
+
+	void Render();
+
+	void Release();
+	glm::mat4 get_scence_view_mat();
+	glm::mat4 get_scence_projection_mat();
+	glm::vec3 get_camera_pos();
+	glm::mat4 m_view_mat;
+	glm::mat4 m_projection_mat;
+	unsigned int cubemapTexture;
+private :
+	list<Model*> model_list;
+	Camera* m_p_scence_camera;
+	float time;
+
+};
+
+class ScenceManager
+{
+public :
+	ScenceManager();
+	~ScenceManager();
+	bool LoadScence(const char* scence_name, const char* scence_date_model_name, const char* scence_date_model_url);
+
+	bool LoadScence(const char* scence_name, Value::ConstValueIterator json);
+
+	bool InitScenceManager();//初始化场景管理器;
+
+	void UpdateScences(float delta_time);//更新场景
+
+	void updatakeyborad(char * direction, float deltaTime);
+
+	void updatamousemovement(float xoffset, float yoffset);
+	
+	void updataMouseScroll(float yoffset);
+
+	void RenderScences();
+
+	void Release();
+
+protected:
+
+	map<string,Scence*> m_Scence;
+
+};

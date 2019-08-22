@@ -1,0 +1,393 @@
+#pragma once
+#include<vector>
+#include<map>
+#include<string>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
+using namespace std;
+#define MAX_BEZIER_CTL_POINT  10
+#define BEZIER_STEP		  120
+
+class BezierInterpolator
+{
+public:
+	BezierInterpolator(float aim_value,int steps = BEZIER_STEP)
+	{
+		m_nPoint = 0;
+		m_targe_value = aim_value;
+		m_max_interpolation_velue = 0;
+		m_index_max_interpolation_velue = 0;
+		m_steps = steps;
+		MakeCtlPion();
+		PtInBezier();
+
+	}
+	~BezierInterpolator()
+	{
+	}
+	void Move(int offx, int offy)
+	{
+		int i;
+		for (i = 0; i<m_nPoint; i++)
+		{
+			//m_Point[i].x += offx;
+			//m_Point[i].y += offy;
+		}
+	}
+
+	void MakeCtlPion()
+	{
+
+		m_ctl_Point[0].x = 0; m_ctl_Point[0].y = 0;
+		m_ctl_Point[1].x = m_targe_value/2; m_ctl_Point[1].y = 0;
+		m_ctl_Point[2].x = m_targe_value / 2; m_ctl_Point[2].y = m_targe_value;
+		m_ctl_Point[3].x = m_targe_value; m_ctl_Point[3].y = m_targe_value;
+		m_nPoint = 4;
+	}
+
+	bool PtInBezier()
+	{
+		int i, j, nPoint;
+		float tt;
+		float step;
+		//CRect rec;
+		int RecWidth = 5;
+
+		glm::vec2 *pnt = m_ctl_Point;
+		//glm::vec2 p[BEZIER_STEP + 1];
+
+		step = (float)1.0 / (float)m_steps;
+		nPoint = m_nPoint;
+
+		while (nPoint >= 4)
+		{
+			float temp = 0.0f;
+			for (tt = 0.0, j = 0; tt<1.01; tt = tt + step, j++)
+			{ 
+				glm::vec2 pnt_ = hor(3, pnt, tt);
+				//m_interpolation_Point[j] = pnt_;
+				m_interpolation_Points.push_back(pnt_);
+				if(j == 0)
+				{
+					temp = m_interpolation_Points[j].y;
+					m_max_interpolation_velue = temp;
+					m_index_max_interpolation_velue = tt*m_steps;
+				}
+				else
+				{
+					float a = m_max_interpolation_velue;
+					float b = m_interpolation_Points[j].y;
+					float c = temp;
+					float d = m_interpolation_Points[j].y - temp;
+					if (abs(a) < abs(d))
+					{
+						m_max_interpolation_velue = d;
+						m_index_max_interpolation_velue = tt*m_steps;
+					}
+					temp = m_interpolation_Points[j].y;
+
+
+				}
+			}
+			return true;
+			for (i = 1; i<j; i++)
+			{
+				//rec.left = p[i - 1].x;
+				//rec.top = p[i - 1].y;
+				//rec.right = p[i].x;
+				//rec.bottom = p[i].y;
+				//rec.NormalizeRect();
+				//rec.InflateRect(1, 1, 1, 1);
+				//if (PtInRect(&rec, point)) return TRUE;
+			}
+			nPoint -= 3;
+			pnt += 3;
+		}
+		return true;
+	}
+	//void Draw(CDC *dc);
+
+	float m_targe_value;
+	glm::vec2 m_ctl_Point[MAX_BEZIER_CTL_POINT];
+	int   m_nPoint;//控制点数量;
+	glm::vec2 m_interpolation_Point[BEZIER_STEP + 1];
+	vector<glm::vec2> m_interpolation_Points;
+	float m_max_interpolation_velue;
+	int m_index_max_interpolation_velue;
+	int m_steps;
+	//int m_index_max_interpolation_velue;
+	
+public:
+	glm::vec2 hor(int degree, glm::vec2 *point, float t)
+	{
+		int i, choose_i;
+		float fact, t1, x, y;
+		glm::vec2 aux;
+		t1 = 1.0f - t;
+		fact = 1.0f;
+		choose_i = 1;
+		x = (float)point[0].x*t1;
+		y = (float)point[0].y*t1;
+		for (i = 1; i<degree; i++)
+		{
+			fact = fact*t;
+			choose_i = choose_i*(degree - i + 1) / i;
+			x = (x + fact*choose_i*point[i].x)*t1;
+			y = (y + fact*choose_i*point[i].y)*t1;
+		}
+		x = x + fact*t*(float)point[degree].x;
+		y = y + fact*t*(float)point[degree].y;
+		aux.x = (float)x;
+		aux.y = (float)y;
+		return aux;
+	}
+
+};
+
+class BezierInterpolator2D
+{
+public:
+	void Move(int offx, int offy) 
+	{
+		int i;
+		for (i = 0; i<m_nPoint; i++)
+		{
+			//m_Point[i].x += offx;
+			//m_Point[i].y += offy;
+		}
+	}
+	bool PtInBezier()
+	{
+		int i, j, nPoint;
+		float tt;
+		float step;
+		//CRect rec;
+		int RecWidth = 5;
+
+		glm::vec2 *pnt = m_ctl_Point;
+		//glm::vec2 p[BEZIER_STEP + 1];
+
+		step = (float)1.0 / (float)BEZIER_STEP;
+		nPoint = m_nPoint;
+
+		while (nPoint >= 4)
+		{
+			for (tt = 0.0, j = 0; tt<1.01; tt = tt + step, j++)
+				m_interpolation_Point[j] = hor(3, pnt, tt);
+			return true;
+			for (i = 1; i<j; i++)
+			{
+				//rec.left = p[i - 1].x;
+				//rec.top = p[i - 1].y;
+				//rec.right = p[i].x;
+				//rec.bottom = p[i].y;
+				//rec.NormalizeRect();
+				//rec.InflateRect(1, 1, 1, 1);
+				//if (PtInRect(&rec, point)) return TRUE;
+			}
+			nPoint -= 3;
+			pnt += 3;
+		}
+		return true;
+	}
+	//void Draw(CDC *dc);
+	BezierInterpolator2D();
+	virtual ~BezierInterpolator2D();
+	glm::vec2 m_ctl_Point[MAX_BEZIER_CTL_POINT];
+	glm::vec2 m_interpolation_Point[BEZIER_STEP+1];
+	int   m_nPoint;
+	
+public:
+	glm::vec2 hor(int degree, glm::vec2 *point, float t) 
+	{
+		int i, choose_i;
+		float fact, t1, x, y;
+		glm::vec2 aux;
+		t1 = 1.0f - t;
+		fact = 1.0f;
+		choose_i = 1;
+		x = (float)point[0].x*t1;
+		y = (float)point[0].y*t1;
+		for (i = 1; i<degree; i++)
+		{
+			fact = fact*t;
+			choose_i = choose_i*(degree - i + 1) / i;
+			x = (x + fact*choose_i*point[i].x)*t1;
+			y = (y + fact*choose_i*point[i].y)*t1;
+		}
+		x = x + fact*t*(float)point[degree].x;
+		y = y + fact*t*(float)point[degree].y;
+		aux.x = (float)x;
+		aux.y = (float)y;
+		return aux;
+	}
+
+};
+#define MAX_BEZIER_CTL_POINT3D  10
+#define BEZIER3D_STEP		  38
+
+
+typedef struct {
+	int length;
+	int * arr;
+}intArray;
+
+typedef struct {
+	int length;
+	glm::vec3 * arr;
+}pointArray;
+
+class BezierInterpolator3D 
+{
+public:
+	BezierInterpolator3D() 
+	{
+	}
+	~BezierInterpolator3D()
+	{
+	}
+
+	//此方法用来计算二项式系数
+	//接受一个数组对象的引用
+	void binomialCoefficient(intArray &C) {
+		int j, n = C.length - 1;
+		for (int k = 0; k <= n; k++) {
+			C.arr[k] = 1;
+			for (j = n; j>k; j--)
+				C.arr[k] *= j;//分子累乘
+			for (j = n - k; j>1; j--)
+				C.arr[k] /= j;//分母累除
+		}
+	}
+
+	//此方法计算在第规律u处点的坐标位置
+	//接受的第一个参数为规律u，第二个参数为将要存放位置点的指针，第三个参数为所有控制点坐标数组，第五个参数为系数数组)
+	void computeBezPt(float u, glm::vec3 &bezPt, pointArray &ctrlPts, intArray &C) {
+		int n = ctrlPts.length - 1;
+		float bezFcn;//保存贝塞尔方程计算结果
+		bezPt.x = bezPt.y = bezPt.z = 0;//初始化
+		for (int k = 0; k <= n; k++) {
+			bezFcn = C.arr[k] * pow(u, k)*pow(1 - u, n - k);
+			bezPt.x += ctrlPts.arr[k].x*bezFcn;
+			bezPt.y += ctrlPts.arr[k].y*bezFcn;
+			bezPt.z += ctrlPts.arr[k].z*bezFcn;
+		}
+	}
+
+
+	//此方法为调用方法，用来产生贝塞尔曲线
+	//第一个参数用来接受控制点数组，第二个参数为精度，精度越高两个点之间的距离越小，但是需要的计算时间也就越长
+	void bezier(pointArray &ctrlPts, int precision) {
+		intArray C;
+		C.length = ctrlPts.length;
+		C.arr = new int[C.length];
+		binomialCoefficient(C);//计算系数
+
+		pointArray bezPts;//保存计算点的参数
+		bezPts.length = precision + 1;
+		bezPts.arr = new glm::vec3[bezPts.length];
+
+		float u;//规律参数
+		for (int k = 0; k <= precision; k++) {
+			u = float(k) / float(precision);
+			computeBezPt(u, bezPts.arr[k], ctrlPts, C);
+		}
+		delete[] bezPts.arr;
+		delete[] C.arr;
+
+	}
+
+
+	glm::vec3 m_ctl_point[MAX_BEZIER_CTL_POINT3D];
+	glm::vec3 m_interpolation_Point[BEZIER3D_STEP + 1];
+};
+
+/*
+void drawLine(pointArray &bezPts){
+glBegin(GL_LINE_STRIP);
+for(int i=0;i<bezPts.length;i++){
+glVertex3f(bezPts.arr[i].x,bezPts.arr[i].y,bezPts.arr[i].z);
+}
+glEnd();
+}
+static pointArray ctrlPts_;
+void displayFcn(void){
+glClear(GL_COLOR_BUFFER_BIT);
+glColor3f(1,0,0);
+bezier(ctrlPts_,100);
+glFlush();
+}
+int main(int argc, char* argv[]){
+ctrlPts_.length = 4;
+point3D ctrlPts[4] = {{-40,-40,0},{-10,200,0},{10,-200,0},{40,40,0}};
+ctrlPts_.arr= ctrlPts;
+
+glutInit(&argc,argv);
+glutInitDisplayMode(GLUT_SINGLE|GLUT_RGBA);
+glutInitWindowPosition(50,50);
+glutInitWindowSize(600,600);
+glutCreateWindow("bezier curve");
+glClearColor(1,1,1,0);
+glMatrixMode(GL_PROJECTION);
+gluOrtho2D(-50,50,-50,50);
+glutDisplayFunc(displayFcn);
+glutMainLoop();
+return 0;
+}
+
+*/
+#include "Defines.h"
+
+class Animation
+{
+public:
+	Animation(string name, float* oigin_value, float targe_value,int ani_steps = BEZIER_STEP);
+	Animation(string name, vector<float*> oigin_value,int target_counts, float targe_value, int ani_steps = BEZIER_STEP);
+	~Animation();
+	bool Play(bool play_reverse = false);
+	bool Pause();
+	bool stop();
+	bool LoopPlay(int times = -1, bool reverse_flag = false, bool loop_to_max = false);
+	void update(float delta_time);
+	bool CheckCreateOK();
+public:
+	string m_Animation_Name;
+	float* m_Ani_target;
+	float m_Ani_target_original;
+
+	vector<float*> m_Ani_targets;
+	vector<float> m_Ani_target_originals;
+	int m_target_counts;
+
+	bool m_create_ok;
+	AniState m_ani_state;
+	bool m_play_reverse_flag;
+	bool m_loop_reverse_flag;
+	bool m_loop_to_max;
+	int m_interpolator_state;
+	BezierInterpolator* m_interpolator;
+};
+
+class AnimationManager
+{
+public:
+	AnimationManager();
+	~AnimationManager();
+
+	bool  Add_Animation(string name, Animation* ani);
+
+	bool PlayAnimation(string name);
+
+	map<string, Animation*> m_anis;
+
+};
+
+
+extern AnimationManager * g_animation_manager;
+
+
+
+
+
+

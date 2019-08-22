@@ -1,0 +1,98 @@
+#pragma once
+
+
+#include<list>
+#include<map>
+#include<string>
+#include"Defines.h"
+#include "Engine.h"
+
+using namespace std;
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
+
+class Node
+{
+public:
+	Node()
+	{
+		visible = true;
+		set_r_helper(((Engine*)g_module_ptr)->GetRenderHelper());
+	};
+	Node(string name)
+	{
+		m_name = name;
+		visible = true;
+		set_r_helper(((Engine*)g_module_ptr)->GetRenderHelper());
+	}
+	~Node() {}
+	Node* FindChildByName(string name)
+	{
+		map<string, Node*>::iterator iter = m_child_nodes.find(name);
+		if (iter != m_child_nodes.end())
+		{
+			return m_child_nodes[name];
+		}
+		//if(m_child_nodes.find())
+		//for (map<string, Node*>::iterator iter = m_child_nodes.begin(); iter != m_child_nodes.end(); ++iter) 
+		//{
+		//if(name = iter->first)
+		//}
+	}
+
+
+
+	glm::vec3 m_pos;
+	float angle_x;
+	float angle_y;
+	float angle_z;
+
+
+	glm::mat4 m_world_mat;
+	glm::mat4 m_view_mat;
+	glm::mat4 m_projection_mat;
+
+
+	string m_name;
+	int m_type;
+	bool visible;
+
+
+	//float* get_
+	void SetFatherNode(Node* f)
+	{
+		if (f)
+			m_root = f;
+	}
+
+	Node* FindScenceRoot(Node* node)
+	{
+		if (node->m_root->m_type == SCENCE)
+			return node->m_root;
+		else
+			return FindScenceRoot(node->m_root);
+	}
+	
+
+	virtual void SetupMats()
+	{
+	}
+
+	void set_r_helper(RenderHelper* r_helper)
+	{
+		m_r_helper = r_helper;
+		s_helper = m_r_helper->m_s_helper;
+		t_helper = m_r_helper->m_t_helper;
+		p_helper = m_r_helper->m_p_helper;
+		d_helper = m_r_helper->m_d_helper;
+	}
+
+	RenderHelper * m_r_helper;
+protected:
+	
+	Node* m_root;
+	map<string, Node*> m_child_nodes;
+};

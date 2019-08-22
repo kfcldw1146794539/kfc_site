@@ -1,0 +1,55 @@
+#pragma once
+
+
+enum AniState
+{
+	PLAY = 1,
+	PAUSE,
+	LOOP,
+	LOOP_TO_MAX,
+	LOOP_REVERSE,
+	FIN,
+	STOP,
+};
+
+
+enum NodeType
+{
+	SCENCE = 1,
+	MODEL,
+	MESH,
+};
+
+
+enum ShaderType
+{
+	NORMAL = 0,
+	PHONG,
+	PHONG_TEX,
+	PHOME_TEX_CUB,
+};
+
+struct Ambient
+{
+	float r;
+	float g;
+	float b;
+
+};
+
+struct Diffuse 
+{
+	float r;
+	float g;
+	float b;
+
+};
+
+struct Specular
+{
+	float r;
+	float g;
+	float b;
+
+};
+

@@ -1,0 +1,5 @@
+﻿  Animation.cpp
+f:\work\yuan\engineproject\engine\mesh_model_lib_dll\model_dll\model_dll\animation.h(75): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+f:\work\yuan\engineproject\engine\mesh_model_lib_dll\model_dll\model_dll\animation.h(86): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  model_dll.vcxproj -> F:\work\yuan\EngineProject\engine\es_windows\Debug\model_dll.dll
+  model_dll.vcxproj -> F:\work\yuan\EngineProject\engine\es_windows\Debug\model_dll.pdb (Full PDB)

@@ -1,0 +1,36 @@
+#pragma once
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <string>
+using namespace std;
+
+struct Material {
+
+
+	string name;
+
+	//材质的环境光（ambient color）
+	glm::vec4 Kambient;
+
+	//材质的散射光（diffuse color）
+	glm::vec4 Kdiffuse;
+
+	//材质的镜面光（specular color）
+	glm::vec4 KspecularColor;
+
+	float SpecularExponent;
+	//材质的放射光
+	glm::vec4 Kemissive;
+
+	float BlendIntensity;
+
+
+
+};
+
+
+
+
+
+void create_glass_material(glm::vec4& Ambient, glm::vec4& Diffuse, glm::vec4& Emissive, glm::vec4& SpecularColor, float& SpecularExponent, float& BlendIntensity);

@@ -1,0 +1,42 @@
+#pragma once
+#include "MakeDll.h"
+//#include "Includes.h"
+//#include"ScenceManager.h"
+//#include"Animation.h"
+#include "module.h"
+class ScenceManager;
+class AnimationManager;
+class DLL_API Engine : Module
+{
+public:
+	Engine();
+
+	~Engine();
+
+	bool CreateEngine(RenderHelper * r_helper);
+	void UpdeteEngin(float delta_time);
+	void RenderEngine();
+	bool InitEngnie(const char* config);
+	void Release() ;
+	void set_r_helper(RenderHelper* r_helper) { m_r_helper = r_helper; };
+	RenderHelper * GetRenderHelper() { return m_r_helper; };
+	void PlayAnimation(const char* name);
+	void updatakeyborad(char * direction, float deltaTime);
+	void updatamousemovement(float xoffset, float yoffset);
+	void updataMouseScroll(float yoffset);
+protected :
+	bool TranslateConfigFile(const char* data);
+private :
+	ScenceManager* m_SecenceManager;
+	AnimationManager * m_AniManager;
+
+};
+
+
+extern "C" DLL_API Engine* create_model();
+extern "C" DLL_API bool release_model(int id);
+extern "C" DLL_API RenderHelper* create_render_help();
+extern "C" DLL_API void release_render_help(RenderHelper* helper);
+
+
+extern void* g_module_ptr;

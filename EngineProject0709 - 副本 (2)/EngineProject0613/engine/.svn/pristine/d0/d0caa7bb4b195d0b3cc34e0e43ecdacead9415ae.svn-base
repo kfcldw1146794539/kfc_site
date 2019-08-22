@@ -1,0 +1,83 @@
+#pragma once
+
+
+#include<list>
+#include<map>
+#include<string>
+#include"Defines.h"
+
+using namespace std;
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
+
+class Node
+{
+public:
+	Node()
+	{
+	};
+	Node(string name)
+	{
+		m_name = name;
+	}
+	~Node() {}
+	Node* FindChildByName(string name)
+	{
+		map<string, Node*>::iterator iter = m_child_nodes.find(name);
+		if (iter != m_child_nodes.end())
+		{
+			return m_child_nodes[name];
+		}
+		//if(m_child_nodes.find())
+		//for (map<string, Node*>::iterator iter = m_child_nodes.begin(); iter != m_child_nodes.end(); ++iter) 
+		//{
+		//if(name = iter->first)
+		//}
+	}
+
+
+
+	glm::vec3 m_pos;
+	float angle_x;
+	float angle_y;
+	float angle_z;
+
+
+	glm::mat4 m_world_mat;
+	glm::mat4 m_view_mat;
+	glm::mat4 m_projection_mat;
+
+
+	string m_name;
+	int m_type;
+
+
+	//float* get_
+	void SetFatherNode(Node* f)
+	{
+		if (f)
+			m_root = f;
+	}
+
+	Node* FindScenceRoot(Node* node)
+	{
+		if (node->m_root->m_type == SCENCE)
+			return node->m_root;
+		else
+			return FindScenceRoot(node->m_root);
+	}
+	
+
+	virtual void SetupMats()
+	{
+	}
+
+
+
+protected:
+	Node* m_root;
+	map<string, Node*> m_child_nodes;
+};

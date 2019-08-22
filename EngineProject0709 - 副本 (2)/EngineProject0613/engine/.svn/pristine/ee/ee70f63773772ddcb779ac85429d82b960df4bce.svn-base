@@ -1,0 +1,66 @@
+attribute vec3 aPos;
+attribute vec3 aNormal;
+attribute vec2 aTexCoords;
+
+varying vec2 TexCoords;
+
+uniform mat4 kzProjectionCameraWorldMatrix;
+uniform mat4 kzWorldMatrix;
+uniform mat4 kzNormalMatrix;
+uniform vec3 kzCameraPosition;
+
+
+uniform vec4 Ambient;
+uniform vec4 Diffuse;
+uniform vec4 SpecularColor;
+uniform float SpecularExponent;
+
+varying vec3 vNormal;
+varying vec3 vViewDirection;
+varying vec2 vTexCoord;
+varying vec3 vAmbDif;
+varying vec3 vSpec;
+
+void main()
+{
+//precision highp float;
+vec4 PointLightColor=vec4(1.0, 1.0, 1.0,1.0);
+vec3 PointLightPosition=vec3(10.0,0.0,100.0);
+vec4 positionWorld = kzWorldMatrix * vec4(aPos.xyz, 1.0);
+vViewDirection = positionWorld.xyz - kzCameraPosition;
+vec3 V = normalize(vViewDirection);
+vec4 Norm = kzNormalMatrix * vec4(aNormal, 1.0);
+vec3 N = normalize(Norm.xyz);
+vNormal = N;
+vec3 pointLightDirection= positionWorld.xyz - PointLightPosition;
+
+vec3 L;
+vec3 H;
+float LdotN, NdotH;
+float specular;
+vec3 c;
+float d, attenuation;
+    
+vAmbDif = vec3(0.0);
+vSpec = vec3(0.0);
+
+L= normalize(-pointLightDirection);
+H= normalize(-V + L);
+
+vAmbDif += Ambient.rgb;
+
+LdotN = max(0.0, dot(L, N));
+NdotH = max(0.0, dot(N, H));
+specular = pow(NdotH, SpecularExponent);
+
+vec3 PointLightAttenuation=vec3(0.5,0.0,0.0);
+c = PointLightAttenuation;
+d = length(pointLightDirection);
+attenuation = 1.0 / max(0.001, (c.x + c.y * d + c.z * d * d));
+
+vAmbDif += (LdotN * Diffuse.rgb)*attenuation*PointLightColor.rgb ;
+vSpec +=  SpecularColor.rgb * specular*attenuation*PointLightColor.rgb  ;
+
+TexCoords = aTexCoords;    
+gl_Position = kzProjectionCameraWorldMatrix * vec4(aPos.xyz,1.0);
+}

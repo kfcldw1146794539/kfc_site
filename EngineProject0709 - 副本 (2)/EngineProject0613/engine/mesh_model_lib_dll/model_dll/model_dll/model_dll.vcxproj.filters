@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Materials.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh2.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="SenceManager.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPasses.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="RayCast.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="skybox.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManipulator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh2.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Msg.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenceManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="module.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="MakeDll.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPasses.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RayCast.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundBox.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="analyse.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="config">
+      <UniqueIdentifier>{f199556a-7ed1-4235-9025-c33b38a5f38f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{d2f72985-ec3a-430a-b3d0-92e047441fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="module">
+      <UniqueIdentifier>{15cfbbca-f3ec-42de-8a28-f13ce20a4635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPP">
+      <UniqueIdentifier>{d85fea03-f404-4a30-8c77-7218016040ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{7adf491e-6f8f-4196-8f0f-4ac1e34e3426}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\es_windows\Debug\config.json">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\1.model_loading.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\1.model_loading.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\phong2.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\phong2.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\PhongTextured.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\PhongTextured.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\PhongTexturedCube.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\PhongTexturedCube.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\mesh_materialtype.json">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader_url.json">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\Physically_Based.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Debug\shader\Physically_Based.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\VertexPhongTexturedCube.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\VertexPhongTexturedCube.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\phong.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\phong.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\phong_cube.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\es_windows\Release\shader\phong_cube.vs">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

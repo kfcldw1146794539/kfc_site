@@ -1,0 +1,10 @@
+
+{
+"Scence":[
+	  {"nanosuit":	[	
+			{"mesh_url":"./gl8/20190529_GL8/untitled3.obj"},
+			{"vs_url":"./Debug/1.model_loading.vs"},
+			{"fs_url":"./Debug/1.model_loading.fs"}
+			]}
+	]
+}
